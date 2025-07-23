@@ -1,1 +1,37 @@
-/* You can add global styles to this file, and also import other style files */
+@import "tailwindcss";
+
+/*
+  Note: This file contains TailwindCSS configuration based on V4
+*/
+
+@theme {
+  /* Fondo - Base oscura */
+  --color-bg-primary: oklch(15% 0.03 275);
+  /* Fondo principal - Azul oscuro neutro */
+  --color-bg-secondary: oklch(20% 0.03 275); /* Fondo secundario */
+  --color-bg-tertiary: oklch(25% 0.03 275); /* Elementos terciarios */
+
+  /* Texto - Alta legibilidad en oscuro */
+  --color-text-primary: oklch(95% 0.01 275);
+  /* Texto principal (blanco ligeramente cálido) */
+  --color-text-secondary: oklch(80% 0.01 275); /* Texto secundario */
+  --color-text-muted: oklch(65% 0.01 275); /* Texto desactivado */
+
+  /* Acentos - Colores vibrantes pero legibles */
+  --color-accent-primary: oklch(70% 0.22 310); /* Acento principal (violeta) */
+  --color-accent-secondary: oklch(75% 0.18 190); /* Acento secundario (cian) */
+
+  /* Estados interactivos */
+  --color-hover: oklch(25% 0.08 275); /* Hover sobre elementos */
+  --color-active: oklch(30% 0.1 275); /* Elemento activo/presionado */
+
+  /* Bordes y divisiones */
+  --color-border: oklch(25% 0.05 275); /* Bordes sutiles */
+}
+
+/* === BODY DARK MODE === */
+body {
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  font-family: system-ui, -apple-system, sans-serif;
+}

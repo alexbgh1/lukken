@@ -1,0 +1,136 @@
+<form [formGroup]="canvasFiltersFormControl" (ngSubmit)="onSubmit()">
+  <!-- Input Image -->
+  <input
+    type="file"
+    accept="image/*"
+    (change)="onFileSelected($event)"
+    [attr.accept]="FILE_CONFIG.ACCEPTED_TYPE.join(',')"
+  />
+  <!-- Show errors for Image -->
+  <div
+    *ngIf="
+      canvasFiltersFormControl.get('image')?.errors &&
+      canvasFiltersFormControl.get('image')?.touched
+    "
+    style="color: red; font-size: 12px; margin-top: 4px"
+  >
+    <div *ngIf="canvasFiltersFormControl.get('image')?.errors?.['required']">
+      La imagen es requerida
+    </div>
+    <div *ngIf="canvasFiltersFormControl.get('image')?.errors?.['maxSize']">
+      {{ canvasFiltersFormControl.get('image')?.errors?.['maxSize'] }}
+    </div>
+  </div>
+
+  <!-- Slider Grid Size -->
+  <input
+    type="range"
+    [min]="GRID_SIZE.MIN"
+    [max]="GRID_SIZE.MAX"
+    step="1"
+    formControlName="gridSize"
+  />
+  <span>{{ canvasFiltersFormControl.value.gridSize }}</span>
+
+  <!-- Show errors for Grid Size -->
+  <div
+    *ngIf="
+      canvasFiltersFormControl.get('gridSize')?.errors &&
+      canvasFiltersFormControl.get('gridSize')?.touched
+    "
+    style="color: red; font-size: 12px; margin-top: 4px"
+  >
+    <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['required']">
+      El tamaño de la grilla es requerido
+    </div>
+    <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['min']">
+      El valor mínimo es {{ GRID_SIZE.MIN }}
+    </div>
+    <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['max']">
+      El valor máximo es {{ GRID_SIZE.MAX }}
+    </div>
+  </div>
+
+  <!-- Slider Node Size -->
+  <input
+    type="range"
+    [min]="NODE_SIZE.MIN"
+    [max]="NODE_SIZE.MAX"
+    step=".1"
+    formControlName="nodeSize"
+  />
+  <span>{{ canvasFiltersFormControl.value.nodeSize | number : "1.2-2" }}</span>
+
+  <!-- Show errors for Node Size -->
+  <div
+    *ngIf="
+      canvasFiltersFormControl.get('nodeSize')?.errors &&
+      canvasFiltersFormControl.get('nodeSize')?.touched
+    "
+    style="color: red; font-size: 12px; margin-top: 4px"
+  >
+    <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['required']">
+      El tamaño del nodo es requerido
+    </div>
+    <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['min']">
+      El valor mínimo es {{ NODE_SIZE.MIN }}
+    </div>
+    <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['max']">
+      El valor máximo es {{ NODE_SIZE.MAX }}
+    </div>
+  </div>
+
+  <!-- Slider Spacing -->
+  <input
+    type="range"
+    [min]="SPACING.MIN"
+    [max]="SPACING.MAX"
+    step="0.1"
+    formControlName="spacing"
+  />
+
+  <!-- Show errors for Spacing -->
+  <div
+    *ngIf="
+      canvasFiltersFormControl.get('spacing')?.errors &&
+      canvasFiltersFormControl.get('spacing')?.touched
+    "
+    style="color: red; font-size: 12px; margin-top: 4px"
+  >
+    <div *ngIf="canvasFiltersFormControl.get('spacing')?.errors?.['required']">
+      El espaciado es requerido
+    </div>
+    <div *ngIf="canvasFiltersFormControl.get('spacing')?.errors?.['min']">
+      El valor mínimo es {{ SPACING.MIN }}
+    </div>
+    <div *ngIf="canvasFiltersFormControl.get('spacing')?.errors?.['max']">
+      El valor máximo es {{ SPACING.MAX }}
+    </div>
+  </div>
+
+  <!-- Connectivity Group Nodes Selector -->
+  <select formControlName="connectivitySelector">
+    <option [value]="4">4-way</option>
+    <option [value]="8">8-way</option>
+  </select>
+  {{ canvasFiltersFormControl.value.connectivitySelector | number : "1.0-0" }}
+
+  <!-- Show errors for Connectivity Selector -->
+  <div
+    *ngIf="
+      canvasFiltersFormControl.get('connectivitySelector')?.errors &&
+      canvasFiltersFormControl.get('connectivitySelector')?.touched
+    "
+    style="color: red; font-size: 12px; margin-top: 4px"
+  >
+    <div
+      *ngIf="canvasFiltersFormControl.get('connectivitySelector')?.errors?.['required']"
+    >
+      La conectividad de nodos es requerida
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="!canvasFiltersFormControl.valid">
+    Submit
+  </button>
+</form>

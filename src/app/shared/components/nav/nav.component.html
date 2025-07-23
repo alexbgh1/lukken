@@ -1,0 +1,18 @@
+<nav class="sticky top-0 z-50">
+  <ul
+    class="flex space-x-4 p-4 bg-bg-secondary border-b border-border justify-end"
+  >
+    @for (item of navLinks; track $index) {
+    <li>
+      <a
+        [routerLink]="[item.href]"
+        [routerLinkActive]="['bg-bg-tertiary', 'text-white']"
+        class="px-4 py-2 rounded-md text-text-secondary hover:bg-hover active:bg-active transition-colors"
+        [routerLinkActiveOptions]="{ exact: true }"
+      >
+        {{ item.name }}
+      </a>
+    </li>
+    }
+  </ul>
+</nav>
