@@ -9,6 +9,7 @@ export class FiltersDataService {
   currentFilters = this.filtersSignal.asReadonly();
 
   updateFilters(filters: CanvasFilters): void {
+    console.log('Updating filters:', filters);
     this.filtersSignal.set(filters);
   }
 }

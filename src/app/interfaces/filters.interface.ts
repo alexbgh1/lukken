@@ -1,11 +1,13 @@
 import { FormControl } from '@angular/forms';
 
+export type ConnectivityOptions = 4 | 8;
+
 export interface CanvasFilters {
   image: File | null;
   gridSize: number;
   nodeSize: number;
   spacing: number;
-  connectivitySelector: 4 | 8;
+  connectivitySelector: ConnectivityOptions;
 }
 
 export interface FiltersForm {
@@ -13,5 +15,5 @@ export interface FiltersForm {
   gridSize: FormControl<number>;
   nodeSize: FormControl<number>;
   spacing: FormControl<number>;
-  connectivitySelector: FormControl<4 | 8>;
+  connectivitySelector: FormControl<ConnectivityOptions>;
 }

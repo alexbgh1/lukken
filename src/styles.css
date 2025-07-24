@@ -5,28 +5,140 @@
 */
 
 @theme {
-  /* Fondo - Base oscura */
+  /* Background, Dark Blue */
   --color-bg-primary: oklch(15% 0.03 275);
-  /* Fondo principal - Azul oscuro neutro */
-  --color-bg-secondary: oklch(20% 0.03 275); /* Fondo secundario */
-  --color-bg-tertiary: oklch(25% 0.03 275); /* Elementos terciarios */
+  --color-bg-secondary: oklch(20% 0.03 275);
+  --color-bg-tertiary: oklch(25% 0.03 275);
 
-  /* Texto - Alta legibilidad en oscuro */
+  /* White text to grayish tones */
   --color-text-primary: oklch(95% 0.01 275);
-  /* Texto principal (blanco ligeramente cálido) */
-  --color-text-secondary: oklch(80% 0.01 275); /* Texto secundario */
-  --color-text-muted: oklch(65% 0.01 275); /* Texto desactivado */
+  --color-text-secondary: oklch(80% 0.01 275);
+  --color-text-muted: oklch(65% 0.01 275);
 
-  /* Acentos - Colores vibrantes pero legibles */
-  --color-accent-primary: oklch(70% 0.22 310); /* Acento principal (violeta) */
-  --color-accent-secondary: oklch(75% 0.18 190); /* Acento secundario (cian) */
+  /* Accent colors, TODO: update */
+  --color-accent-primary: oklch(70% 0.22 310);
+  --color-accent-secondary: oklch(75% 0.18 190);
 
-  /* Estados interactivos */
-  --color-hover: oklch(25% 0.08 275); /* Hover sobre elementos */
-  --color-active: oklch(30% 0.1 275); /* Elemento activo/presionado */
+  /* Interactive states */
+  --color-hover: oklch(25% 0.08 275);
+  --color-active: oklch(30% 0.1 275);
 
-  /* Bordes y divisiones */
-  --color-border: oklch(25% 0.05 275); /* Bordes sutiles */
+  /* Borders and division lines */
+  --color-border: oklch(25% 0.05 275);
+}
+
+@layer base {
+  /* Range input styles - Override Tailwind defaults */
+  input[type="range"],
+  .custom-range {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+    height: 8px;
+    border-radius: 4px;
+  }
+
+  /* Track styles for WebKit browsers */
+  input[type="range"]::-webkit-slider-track,
+  .custom-range::-webkit-slider-track {
+    width: 100%;
+    height: 8px;
+    background: var(--color-bg-secondary);
+    border-radius: 4px;
+    border: none;
+  }
+
+  /* Thumb styles for WebKit browsers */
+  input[type="range"]::-webkit-slider-thumb,
+  .custom-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--color-accent-primary);
+    border-radius: 50%;
+    border: 2px solid var(--color-bg-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: -6px; /* Center the thumb */
+  }
+
+  input[type="range"]::-webkit-slider-thumb:hover,
+  .custom-range::-webkit-slider-thumb:hover {
+    background: var(--color-accent-secondary);
+    transform: scale(1.1);
+  }
+
+  /* Track styles for Firefox */
+  input[type="range"]::-moz-range-track,
+  .custom-range::-moz-range-track {
+    width: 100%;
+    height: 8px;
+    background: var(--color-bg-secondary);
+    border-radius: 4px;
+    border: none;
+  }
+
+  /* Thumb styles for Firefox */
+  input[type="range"]::-moz-range-thumb,
+  .custom-range::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--color-accent-primary);
+    border-radius: 50%;
+    border: 2px solid var(--color-bg-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -moz-appearance: none;
+  }
+
+  input[type="range"]::-moz-range-thumb:hover,
+  .custom-range::-moz-range-thumb:hover {
+    background: var(--color-accent-secondary);
+    transform: scale(1.1);
+  }
+
+  /* File input styles */
+  input[type="file"] {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--color-text-primary);
+  }
+
+  input[type="file"]::-webkit-file-upload-button {
+    background: var(--color-accent-primary);
+    color: var(--color-bg-primary);
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    margin-right: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease;
+  }
+
+  input[type="file"]::-webkit-file-upload-button:hover {
+    background: var(--color-accent-secondary);
+  }
+
+  /* Select styles */
+  select {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--color-text-primary);
+    cursor: pointer;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 2px rgba(112, 198, 255, 0.2);
+  }
 }
 
 /* === BODY DARK MODE === */

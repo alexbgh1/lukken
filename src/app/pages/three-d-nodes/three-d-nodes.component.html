@@ -1,9 +1,14 @@
-<main-layout className="flex p-8 md:p-20 flex-col max-w-6xl mx-auto">
+<main-layout>
   <h1 class="text-3xl font-bold mb-2">3D Nodes</h1>
   <p class="mb-4 text-text-secondary">
     This page showcases the 3D nodes feature. You can transform a photo into 3D
     nodes.
   </p>
 
-  <three-d-filters></three-d-filters>
+  <div class="flex flex-col gap-4 lg:flex-row">
+    <three-d-filters></three-d-filters>
+    <div class="w-full">
+      <three-d-nodes-canvas></three-d-nodes-canvas>
+    </div>
+  </div>
 </main-layout>

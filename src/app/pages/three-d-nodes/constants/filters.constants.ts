@@ -4,13 +4,13 @@ const FILE_CONFIG = {
 };
 
 const GRID_SIZE = {
-  DEFAULT: 5,
+  DEFAULT: 8,
   MIN: 5,
   MAX: 50,
 };
 
 const NODE_SIZE = {
-  DEFAULT: 0.1,
+  DEFAULT: 1,
   MIN: 0.1,
   MAX: 2,
 };
@@ -21,8 +21,10 @@ const SPACING = {
   MAX: 5,
 };
 
+// Options are shown on select dropdown
 const CONNECTED_GROUP_NODES = {
   DEFAULT: 4,
+  OPTIONS: [4, 8],
 };
 
 const FILTERS_CONFIG = {

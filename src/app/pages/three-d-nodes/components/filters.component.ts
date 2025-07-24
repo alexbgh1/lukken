@@ -10,24 +10,35 @@ import { DecimalPipe, CommonModule } from '@angular/common';
 import { FILTERS_CONFIG } from '../constants/filters.constants';
 import {
   CanvasFilters,
+  ConnectivityOptions,
   FiltersForm,
 } from '../../../interfaces/filters.interface';
 
 import { FiltersDataService } from '../services/filters-data.service';
+import { UploadIconComponent } from '../../../shared/icons';
 
 @Component({
-  imports: [ReactiveFormsModule, DecimalPipe, CommonModule],
+  imports: [
+    ReactiveFormsModule,
+    DecimalPipe,
+    CommonModule,
+    UploadIconComponent,
+  ],
   selector: 'three-d-filters',
   templateUrl: './filters.component.html',
 })
 export class FiltersComponent {
   constructor(private filtersData: FiltersDataService) {}
 
+  isDragging = false;
+  fileDropError: string | null = null;
+
   FILE_CONFIG = FILTERS_CONFIG.FILE_CONFIG;
   GRID_SIZE = FILTERS_CONFIG.GRID_SIZE;
   NODE_SIZE = FILTERS_CONFIG.NODE_SIZE;
   SPACING = FILTERS_CONFIG.SPACING;
   CONNECTIVITY = FILTERS_CONFIG.CONNECTED_GROUP_NODES;
+  CONNECTIVITY_OPTIONS = this.CONNECTIVITY.OPTIONS;
 
   canvasFiltersFormControl: FormGroup<FiltersForm> = new FormGroup({
     image: new FormControl<File | null>(null, Validators.required),
@@ -49,15 +60,86 @@ export class FiltersComponent {
     connectivitySelector: new FormControl(
       this.CONNECTIVITY.DEFAULT,
       Validators.required
-    ) as FormControl<4 | 8>,
+    ) as FormControl<ConnectivityOptions>,
   });
 
   onSubmit(): void {
     if (this.canvasFiltersFormControl.valid) {
-      this.filtersData.updateFilters(
-        this.canvasFiltersFormControl.value as CanvasFilters
-      );
+      const formValue = this.canvasFiltersFormControl.value;
+
+      /* Validate  all fields again before updating (to avoid interface problems) */
+      if (
+        !formValue.image ||
+        formValue.gridSize === undefined ||
+        formValue.nodeSize === undefined ||
+        formValue.spacing === undefined ||
+        formValue.connectivitySelector === undefined
+      ) {
+        console.error('Form value is null or undefined');
+        return;
+      }
+
+      const filters: CanvasFilters = {
+        image: formValue.image,
+        gridSize: formValue.gridSize,
+        nodeSize: formValue.nodeSize,
+        spacing: formValue.spacing,
+        connectivitySelector: Number(
+          formValue.connectivitySelector
+        ) as ConnectivityOptions,
+      };
+
+      this.filtersData.updateFilters(filters);
     }
+  }
+
+  /* File Drag and Drop and selection validation */
+
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = true;
+  }
+
+  // Maneja el evento drag leave
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+  }
+
+  // Maneja el evento drop
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.isDragging = false;
+    this.fileDropError = null;
+
+    if (!event.dataTransfer?.files.length) return;
+
+    const file = event.dataTransfer.files[0];
+    this.validateAndSetFile(file);
+  }
+
+  private validateAndSetFile(file: File) {
+    if (
+      !file.type.match(
+        this.FILE_CONFIG.ACCEPTED_TYPE.map((type) => type).join('|')
+      )
+    ) {
+      this.fileDropError = 'Please only upload image files';
+      return;
+    }
+
+    if (file.size > this.FILE_CONFIG.MAX_SIZE) {
+      const maxSizeMB = this.FILE_CONFIG.MAX_SIZE / 1024 / 1024;
+      this.fileDropError = `File exceeds ${maxSizeMB}MB`;
+      return;
+    }
+
+    this.canvasFiltersFormControl.get('image')?.setValue(file);
+    this.canvasFiltersFormControl.get('image')?.setErrors(null);
+    this.fileDropError = null;
   }
 
   onFileSelected(event: Event) {
@@ -66,22 +148,10 @@ export class FiltersComponent {
 
     this.canvasFiltersFormControl.get('image')?.markAsTouched();
 
-    if (!file) {
-      return this.canvasFiltersFormControl.get('image')?.setValue(null);
+    if (file) {
+      this.validateAndSetFile(file);
+    } else {
+      this.canvasFiltersFormControl.get('image')?.setValue(null);
     }
-
-    const isFileTooLarge = file.size > this.FILE_CONFIG.MAX_SIZE;
-
-    if (isFileTooLarge) {
-      const maxSizeMB = this.FILE_CONFIG.MAX_SIZE / 1024 / 1024;
-      this.canvasFiltersFormControl.get('image')?.setErrors({
-        maxSize: `
-        Fille size exceeds ${maxSizeMB}MB`,
-      });
-      return;
-    }
-
-    this.canvasFiltersFormControl.get('image')?.setValue(file);
-    this.canvasFiltersFormControl.get('image')?.setErrors(null);
   }
 }

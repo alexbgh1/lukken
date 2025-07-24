@@ -1,136 +1,240 @@
-<form [formGroup]="canvasFiltersFormControl" (ngSubmit)="onSubmit()">
-  <!-- Input Image -->
-  <input
-    type="file"
-    accept="image/*"
-    (change)="onFileSelected($event)"
-    [attr.accept]="FILE_CONFIG.ACCEPTED_TYPE.join(',')"
-  />
-  <!-- Show errors for Image -->
-  <div
-    *ngIf="
-      canvasFiltersFormControl.get('image')?.errors &&
-      canvasFiltersFormControl.get('image')?.touched
-    "
-    style="color: red; font-size: 12px; margin-top: 4px"
+<div
+  class="flex flex-col gap-6 p-6 bg-bg-tertiary rounded-xl border border-border sm:min-w-sm max-w-md mx-auto"
+>
+  <form
+    [formGroup]="canvasFiltersFormControl"
+    (ngSubmit)="onSubmit()"
+    class="space-y-6"
   >
-    <div *ngIf="canvasFiltersFormControl.get('image')?.errors?.['required']">
-      La imagen es requerida
-    </div>
-    <div *ngIf="canvasFiltersFormControl.get('image')?.errors?.['maxSize']">
-      {{ canvasFiltersFormControl.get('image')?.errors?.['maxSize'] }}
-    </div>
-  </div>
+    <!-- Input Image -->
+    <div class="space-y-1">
+      <label
+        class="block text-sm font-medium text-text-secondary"
+        for="imageInput"
+        >Image Upload</label
+      >
+      <div class="flex items-center gap-4">
+        <label
+          for="imageInput"
+          class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors"
+          [class.border-accent-primary]="isDragging"
+          [class.border-gray-700]="!isDragging"
+          (dragover)="onDragOver($event)"
+          (dragleave)="onDragLeave($event)"
+          (drop)="onDrop($event)"
+        >
+          <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <icons-upload-icon
+              className="{{
+                isDragging ? 'text-accent-primary' : 'text-text-secondary'
+              }}"
+            ></icons-upload-icon>
+            @if (!canvasFiltersFormControl.value.image) {
+            <p
+              class="mb-2 text-sm"
+              [class.text-accent-primary]="isDragging"
+              [class.text-text-muted]="!isDragging"
+              *ngIf=""
+            >
+              <span class="font-semibold">Click to upload</span> or drag and
+              drop
+            </p>
 
-  <!-- Slider Grid Size -->
-  <input
-    type="range"
-    [min]="GRID_SIZE.MIN"
-    [max]="GRID_SIZE.MAX"
-    step="1"
-    formControlName="gridSize"
-  />
-  <span>{{ canvasFiltersFormControl.value.gridSize }}</span>
+            } @if (canvasFiltersFormControl.value.image) {
+            <p class="text-xs text-text-muted">
+              {{ canvasFiltersFormControl.value.image.name }}
+            </p>
+            }
+          </div>
+          <input
+            id="imageInput"
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+            class="hidden"
+            [attr.accept]="FILE_CONFIG.ACCEPTED_TYPE.join(',')"
+          />
+        </label>
+      </div>
+    </div>
 
-  <!-- Show errors for Grid Size -->
-  <div
-    *ngIf="
-      canvasFiltersFormControl.get('gridSize')?.errors &&
-      canvasFiltersFormControl.get('gridSize')?.touched
-    "
-    style="color: red; font-size: 12px; margin-top: 4px"
-  >
-    <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['required']">
-      El tamaño de la grilla es requerido
+    <!-- Mensajes de error -->
+    <div class="text-sm text-accent-primary space-y-1">
+      <div *ngIf="fileDropError">
+        {{ fileDropError }}
+      </div>
+      <div
+        *ngIf="
+          canvasFiltersFormControl.get('image')?.errors &&
+          canvasFiltersFormControl.get('image')?.touched
+        "
+      >
+        <div
+          *ngIf="canvasFiltersFormControl.get('image')?.errors?.['required']"
+        >
+          Image is required
+        </div>
+        <div *ngIf="canvasFiltersFormControl.get('image')?.errors?.['maxSize']">
+          {{ canvasFiltersFormControl.get('image')?.errors?.['maxSize'] }}
+        </div>
+      </div>
     </div>
-    <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['min']">
-      El valor mínimo es {{ GRID_SIZE.MIN }}
-    </div>
-    <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['max']">
-      El valor máximo es {{ GRID_SIZE.MAX }}
-    </div>
-  </div>
 
-  <!-- Slider Node Size -->
-  <input
-    type="range"
-    [min]="NODE_SIZE.MIN"
-    [max]="NODE_SIZE.MAX"
-    step=".1"
-    formControlName="nodeSize"
-  />
-  <span>{{ canvasFiltersFormControl.value.nodeSize | number : "1.2-2" }}</span>
+    <!-- Grid Size Slider -->
+    <div>
+      <div class="flex justify-between items-center">
+        <label
+          for="gridSize"
+          class="block text-sm font-medium text-text-secondary"
+          >Grid Size</label
+        >
+        <span class="text-sm font-mono text-text-primary">
+          {{ canvasFiltersFormControl.value.gridSize }}
+        </span>
+      </div>
+      <input
+        id="gridSize"
+        type="range"
+        [min]="GRID_SIZE.MIN"
+        [max]="GRID_SIZE.MAX"
+        step="1"
+        formControlName="gridSize"
+        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
+      />
 
-  <!-- Show errors for Node Size -->
-  <div
-    *ngIf="
-      canvasFiltersFormControl.get('nodeSize')?.errors &&
-      canvasFiltersFormControl.get('nodeSize')?.touched
-    "
-    style="color: red; font-size: 12px; margin-top: 4px"
-  >
-    <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['required']">
-      El tamaño del nodo es requerido
+      <!-- Error Messages -->
+      <div
+        *ngIf="
+          canvasFiltersFormControl.get('gridSize')?.errors &&
+          canvasFiltersFormControl.get('gridSize')?.touched
+        "
+        class="text-sm text-accent-primary space-y-1"
+      >
+        <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['min']">
+          Minimum value is {{ GRID_SIZE.MIN }}
+        </div>
+        <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['max']">
+          Maximum value is {{ GRID_SIZE.MAX }}
+        </div>
+      </div>
     </div>
-    <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['min']">
-      El valor mínimo es {{ NODE_SIZE.MIN }}
-    </div>
-    <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['max']">
-      El valor máximo es {{ NODE_SIZE.MAX }}
-    </div>
-  </div>
 
-  <!-- Slider Spacing -->
-  <input
-    type="range"
-    [min]="SPACING.MIN"
-    [max]="SPACING.MAX"
-    step="0.1"
-    formControlName="spacing"
-  />
+    <!-- Node Size Slider -->
+    <div>
+      <div class="flex justify-between items-center">
+        <label
+          for="nodeSize"
+          class="block text-sm font-medium text-text-secondary"
+          >Node Size</label
+        >
+        <span class="text-sm font-mono text-text-primary">
+          {{ canvasFiltersFormControl.value.nodeSize | number : "1.2-2" }}
+        </span>
+      </div>
+      <input
+        id="nodeSize"
+        type="range"
+        [min]="NODE_SIZE.MIN"
+        [max]="NODE_SIZE.MAX"
+        step=".1"
+        formControlName="nodeSize"
+        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
+      />
 
-  <!-- Show errors for Spacing -->
-  <div
-    *ngIf="
-      canvasFiltersFormControl.get('spacing')?.errors &&
-      canvasFiltersFormControl.get('spacing')?.touched
-    "
-    style="color: red; font-size: 12px; margin-top: 4px"
-  >
-    <div *ngIf="canvasFiltersFormControl.get('spacing')?.errors?.['required']">
-      El espaciado es requerido
+      <!-- Error Messages -->
+      <div
+        *ngIf="
+          canvasFiltersFormControl.get('nodeSize')?.errors &&
+          canvasFiltersFormControl.get('nodeSize')?.touched
+        "
+        class="text-sm text-accent-primary space-y-1"
+      >
+        <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['min']">
+          Minimum value is {{ NODE_SIZE.MIN }}
+        </div>
+        <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['max']">
+          Maximum value is {{ NODE_SIZE.MAX }}
+        </div>
+      </div>
     </div>
-    <div *ngIf="canvasFiltersFormControl.get('spacing')?.errors?.['min']">
-      El valor mínimo es {{ SPACING.MIN }}
-    </div>
-    <div *ngIf="canvasFiltersFormControl.get('spacing')?.errors?.['max']">
-      El valor máximo es {{ SPACING.MAX }}
-    </div>
-  </div>
 
-  <!-- Connectivity Group Nodes Selector -->
-  <select formControlName="connectivitySelector">
-    <option [value]="4">4-way</option>
-    <option [value]="8">8-way</option>
-  </select>
-  {{ canvasFiltersFormControl.value.connectivitySelector | number : "1.0-0" }}
+    <!-- Spacing Slider -->
+    <div>
+      <div class="flex justify-between items-center">
+        <label
+          for="spacing"
+          class="block text-sm font-medium text-text-secondary"
+          >Spacing</label
+        >
+        <span class="text-sm font-mono text-text-primary">
+          {{ canvasFiltersFormControl.value.spacing | number : "1.1-1" }}
+        </span>
+      </div>
+      <input
+        id="spacing"
+        type="range"
+        [min]="SPACING.MIN"
+        [max]="SPACING.MAX"
+        step="0.1"
+        formControlName="spacing"
+        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
+      />
 
-  <!-- Show errors for Connectivity Selector -->
-  <div
-    *ngIf="
-      canvasFiltersFormControl.get('connectivitySelector')?.errors &&
-      canvasFiltersFormControl.get('connectivitySelector')?.touched
-    "
-    style="color: red; font-size: 12px; margin-top: 4px"
-  >
-    <div
-      *ngIf="canvasFiltersFormControl.get('connectivitySelector')?.errors?.['required']"
+      <!-- Error Messages -->
+      <div
+        *ngIf="
+          canvasFiltersFormControl.get('spacing')?.errors &&
+          canvasFiltersFormControl.get('spacing')?.touched
+        "
+        class="text-sm text-accent-primary space-y-1"
+      >
+        <!-- error: min spacing -->
+        @if ( canvasFiltersFormControl.get('spacing')?.errors?.['min'] ) {
+        <div>Minimum value is {{ SPACING.MIN }}</div>
+        }
+
+        <!-- error: max spacing -->
+        @if (canvasFiltersFormControl.get('spacing')?.errors?.['max']) {
+        <div>Maximum value is {{ SPACING.MAX }}</div>
+        }
+      </div>
+    </div>
+
+    <!-- Connectivity Selector -->
+    <div class="space-y-1">
+      <label
+        for="connectivitySelector"
+        class="block text-sm font-medium text-text-secondary"
+        >Connectivity</label
+      >
+      <select
+        id="connectivitySelector"
+        formControlName="connectivitySelector"
+        class="bg-bg-secondary border border-border text-text-primary text-sm rounded-lg focus:ring-accent-primary focus:border-accent-primary block w-full p-2.5"
+      >
+        @for (connectivityOption of CONNECTIVITY.OPTIONS; track $index) {
+        <option [value]="connectivityOption">
+          {{ connectivityOption }}-way connectivity
+        </option>
+        }
+      </select>
+
+      <!-- Error Messages -->
+      @if ( canvasFiltersFormControl.get('connectivitySelector')?.errors &&
+      canvasFiltersFormControl.get('connectivitySelector')?.touched) {
+      <div class="text-sm text-accent-primary">
+        Please select a connectivity option
+      </div>
+      }
+    </div>
+
+    <!-- Submit Button -->
+    <button
+      type="submit"
+      [disabled]="!canvasFiltersFormControl.valid"
+      class="w-full px-5 py-2.5 text-sm font-medium text-center text-text-primary bg-accent-primary rounded-lg hover:bg-accent-secondary transition-colors focus:ring-2 focus:outline-none focus:ring-accent-secondary disabled:opacity-50 disabled:cursor-not-allowed"
     >
-      La conectividad de nodos es requerida
-    </div>
-  </div>
-
-  <button type="submit" [disabled]="!canvasFiltersFormControl.valid">
-    Submit
-  </button>
-</form>
+      Generate 3D Visualization
+    </button>
+  </form>
+</div>
