@@ -10,7 +10,7 @@ export interface CanvasFilters {
   connectivitySelector: ConnectivityOptions;
 }
 
-export interface FiltersForm {
+export interface FormFilters {
   image: FormControl<File | null>;
   gridSize: FormControl<number>;
   nodeSize: FormControl<number>;

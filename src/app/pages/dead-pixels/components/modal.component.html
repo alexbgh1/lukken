@@ -1,0 +1,143 @@
+@if (isOpen()) {
+<div
+  class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  (click)="closeModal()"
+>
+  <div
+    class="bg-bg-secondary rounded-lg p-6 max-w-6xl max-h-[95vh] w-full mx-4"
+    (click)="$event.stopPropagation()"
+  >
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h3 class="text-lg font-semibold text-text-primary">Zoom View</h3>
+        <p class="text-sm text-text-secondary">
+          @if (currentImage && deadPixelsCount > 0) { Found
+          {{ deadPixelsCount }} problematic pixels ({{
+            deadPixelsByType.dead
+          }}
+          dead, {{ deadPixelsByType.hot }} hot,
+          {{ deadPixelsByType.stuck }} stuck) } @else if (currentImage) { No
+          problematic pixels detected } @else { Loading image... }
+        </p>
+      </div>
+
+      <!-- Controls -->
+      <div class="flex items-center gap-2">
+        <button
+          class="inline-flex items-center gap-1 px-3 py-1 text-sm rounded transition-colors"
+          [class.bg-accent-primary]="modalHighlight()"
+          [class.text-text-primary]="modalHighlight()"
+          [class.bg-bg-tertiary]="!modalHighlight()"
+          [class.text-text-secondary]="!modalHighlight()"
+          [disabled]="!currentImage"
+          (click)="toggleModalHighlight()"
+        >
+          {{ modalHighlight() ? "Hide" : "Show" }} Highlights
+        </button>
+        <button
+          class="p-2 rounded hover:bg-bg-tertiary transition-colors"
+          [disabled]="!currentImage"
+          (click)="zoomIn()"
+          title="Zoom In"
+        >
+          <zoom-in-icon className="w-5 h-5 text-text-primary" />
+        </button>
+        <button
+          class="p-2 rounded hover:bg-bg-tertiary transition-colors"
+          [disabled]="!currentImage"
+          (click)="zoomOut()"
+          title="Zoom Out"
+        >
+          <zoom-out-icon className="w-5 h-5 text-text-primary" />
+        </button>
+        <button
+          class="p-2 rounded hover:bg-bg-tertiary transition-colors"
+          [disabled]="!currentImage"
+          (click)="resetZoom()"
+          title="Reset View"
+        >
+          <move-icon className="w-5 h-5 text-text-primary" />
+        </button>
+        <span class="text-sm text-text-secondary font-mono min-w-[60px]">
+          {{ zoomLevel().toFixed(0) }}%
+        </span>
+        <button
+          class="p-2 rounded hover:bg-bg-tertiary transition-colors"
+          (click)="closeModal()"
+          title="Close"
+        >
+          <x-icon className="w-5 h-5 text-text-primary" />
+        </button>
+      </div>
+    </div>
+
+    <!-- Canvas Container -->
+    <div
+      class="border border-border rounded-lg overflow-hidden bg-bg-primary max-h-[75vh] relative"
+    >
+      @if (!currentImage) {
+      <div class="flex items-center justify-center h-96">
+        <div class="text-text-secondary text-center">
+          <div
+            class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-primary mx-auto mb-2"
+          ></div>
+          Loading image...
+        </div>
+      </div>
+      } @else {
+      <div
+        class="relative w-full h-full overflow-hidden cursor-move"
+        [class.cursor-grabbing]="isDragging()"
+        (mousedown)="startDrag($event)"
+        (mousemove)="onDrag($event)"
+        (mouseup)="endDrag()"
+        (mouseleave)="endDrag()"
+        (wheel)="onWheel($event)"
+      >
+        <dead-pixels-canvas
+          [useFiltersService]="false"
+          [customImage]="currentImage"
+          [customSensitivity]="currentSensitivity"
+          [canvasClass]="'block max-w-none'"
+          [transform]="canvasTransform"
+          [showHighlights]="modalHighlight()"
+          (imageProcessed)="onImageProcessed($event)"
+        ></dead-pixels-canvas>
+      </div>
+      }
+    </div>
+
+    <!-- Legend -->
+    @if (currentImage) {
+    <div
+      class="mt-4 flex justify-between items-center text-sm text-text-secondary"
+    >
+      <div class="flex gap-4">
+        <pixel-legend
+          [pixelType]="PixelType.DEAD"
+          [pixelCount]="deadPixelsByType.dead"
+          pixelLegendText="Dead pixels"
+        ></pixel-legend>
+
+        <pixel-legend
+          [pixelType]="PixelType.HOT"
+          [pixelCount]="deadPixelsByType.hot"
+          pixelLegendText="Hot pixels"
+        ></pixel-legend>
+
+        <pixel-legend
+          [pixelType]="PixelType.STUCK"
+          [pixelCount]="deadPixelsByType.stuck"
+          pixelLegendText="Stuck pixels"
+        ></pixel-legend>
+      </div>
+      <p>
+        Mouse wheel to zoom • Click and drag to pan • Use controls above for
+        precise adjustment
+      </p>
+    </div>
+    }
+  </div>
+</div>
+}

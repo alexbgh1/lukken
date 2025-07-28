@@ -7,7 +7,7 @@
 */
 
 const SCENE_CONFIG = {
-  BACKGROUND_COLOR: 0x1a1a2e, // Dark purple background
+  BACKGROUND_COLOR: 0x1a1a2e, // Dark purple background // bg-canvas in tailwind
   FOV: 75,
   NEAR_PLANE: 0.1,
   FAR_PLANE: 1000,
@@ -29,7 +29,7 @@ const LIGHTING_CONFIG = {
   // https://threejs.org/docs/#api/en/lights/DirectionalLight
   DIRECTIONAL_LIGHT: {
     COLOR: 0xffffff,
-    INTENSITY: 0.6,
+    INTENSITY: 1,
     POSITION: {
       X: 1,
       Y: 1,

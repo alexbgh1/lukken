@@ -6,7 +6,7 @@ import {
   effect,
 } from '@angular/core';
 import * as THREE from 'three';
-import { CanvasFilters } from '../../../interfaces/filters.interface';
+import { CanvasFilters } from '../../../interfaces/three-d-nodes-filters.interface';
 import { FiltersDataService } from '../services/filters-data.service';
 import { OrbitControls } from 'three-stdlib';
 import {
@@ -34,8 +34,9 @@ import {
   ],
   standalone: true,
 })
-export class CanvasComponent implements AfterViewInit, OnDestroy {
+export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {
   private canvas!: HTMLCanvasElement;
+
   private scene!: THREE.Scene;
   private camera!: THREE.PerspectiveCamera;
   private renderer!: THREE.WebGLRenderer;

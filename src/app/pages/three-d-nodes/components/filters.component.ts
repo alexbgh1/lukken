@@ -11,8 +11,8 @@ import { FILTERS_CONFIG } from '../constants/filters.constants';
 import {
   CanvasFilters,
   ConnectivityOptions,
-  FiltersForm,
-} from '../../../interfaces/filters.interface';
+  FormFilters,
+} from '../../../interfaces/three-d-nodes-filters.interface';
 
 import { FiltersDataService } from '../services/filters-data.service';
 import { UploadIconComponent } from '../../../shared/icons';
@@ -27,7 +27,7 @@ import { UploadIconComponent } from '../../../shared/icons';
   selector: 'three-d-filters',
   templateUrl: './filters.component.html',
 })
-export class FiltersComponent {
+export class Three3dFiltersComponent {
   constructor(private filtersData: FiltersDataService) {}
 
   isDragging = false;
@@ -40,7 +40,7 @@ export class FiltersComponent {
   CONNECTIVITY = FILTERS_CONFIG.CONNECTED_GROUP_NODES;
   CONNECTIVITY_OPTIONS = this.CONNECTIVITY.OPTIONS;
 
-  canvasFiltersFormControl: FormGroup<FiltersForm> = new FormGroup({
+  canvasFiltersFormControl: FormGroup<FormFilters> = new FormGroup({
     image: new FormControl<File | null>(null, Validators.required),
     gridSize: new FormControl(this.GRID_SIZE.DEFAULT, [
       Validators.required,
@@ -101,14 +101,14 @@ export class FiltersComponent {
     this.isDragging = true;
   }
 
-  // Maneja el evento drag leave
+  // Visual feedback: isDragging false
   onDragLeave(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.isDragging = false;
   }
 
-  // Maneja el evento drop
+  // Visual feedback: isDragging false and fileDropError null
   onDrop(event: DragEvent) {
     event.preventDefault();
     event.stopPropagation();

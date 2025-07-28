@@ -1,9 +1,8 @@
-// upload-icon.component.ts
 import { Component, Input } from '@angular/core';
 import { cn } from '../../utils/cn';
 
 @Component({
-  selector: 'icons-upload-icon',
+  selector: 'upload-icon',
   standalone: true,
   template: `
     <svg

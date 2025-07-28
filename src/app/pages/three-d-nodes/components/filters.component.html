@@ -24,24 +24,22 @@
           (drop)="onDrop($event)"
         >
           <div class="flex flex-col items-center justify-center pt-5 pb-6">
-            <icons-upload-icon
+            <upload-icon
               className="{{
                 isDragging ? 'text-accent-primary' : 'text-text-secondary'
               }}"
-            ></icons-upload-icon>
+            ></upload-icon>
             @if (!canvasFiltersFormControl.value.image) {
             <p
               class="mb-2 text-sm"
               [class.text-accent-primary]="isDragging"
               [class.text-text-muted]="!isDragging"
-              *ngIf=""
             >
               <span class="font-semibold">Click to upload</span> or drag and
               drop
             </p>
-
             } @if (canvasFiltersFormControl.value.image) {
-            <p class="text-xs text-text-muted">
+            <p class="text-center text-xs text-text-muted">
               {{ canvasFiltersFormControl.value.image.name }}
             </p>
             }
@@ -58,26 +56,31 @@
       </div>
     </div>
 
-    <!-- Mensajes de error -->
+    <!-- Error message -->
     <div class="text-sm text-accent-primary space-y-1">
-      <div *ngIf="fileDropError">
+      @if (fileDropError) {
+      <div>
         {{ fileDropError }}
       </div>
-      <div
-        *ngIf="
-          canvasFiltersFormControl.get('image')?.errors &&
-          canvasFiltersFormControl.get('image')?.touched
-        "
-      >
-        <div
-          *ngIf="canvasFiltersFormControl.get('image')?.errors?.['required']"
-        >
-          Image is required
-        </div>
-        <div *ngIf="canvasFiltersFormControl.get('image')?.errors?.['maxSize']">
+      }
+      <!-- Error Messages -->
+      @if ( canvasFiltersFormControl.get('image')?.errors &&
+      canvasFiltersFormControl.get('image')?.touched ) {
+
+      <div>
+        <!-- error: required image-->
+        @if (canvasFiltersFormControl.get('image')?.errors?.['maxSize']) {
+        <div>Image is required</div>
+        }
+
+        <!-- error: max file size -->
+        @if (canvasFiltersFormControl.get('image')?.errors?.['maxSize']) {
+        <div>
           {{ canvasFiltersFormControl.get('image')?.errors?.['maxSize'] }}
         </div>
+        }
       </div>
+      }
     </div>
 
     <!-- Grid Size Slider -->
@@ -103,20 +106,20 @@
       />
 
       <!-- Error Messages -->
-      <div
-        *ngIf="
-          canvasFiltersFormControl.get('gridSize')?.errors &&
-          canvasFiltersFormControl.get('gridSize')?.touched
-        "
-        class="text-sm text-accent-primary space-y-1"
-      >
-        <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['min']">
-          Minimum value is {{ GRID_SIZE.MIN }}
-        </div>
-        <div *ngIf="canvasFiltersFormControl.get('gridSize')?.errors?.['max']">
-          Maximum value is {{ GRID_SIZE.MAX }}
-        </div>
+      @if ( canvasFiltersFormControl.get('gridSize')?.errors &&
+      canvasFiltersFormControl.get('gridSize')?.touched) {
+      <!-- Max and min Value for GRID_SIZE -->
+      <div class="text-sm text-accent-primary space-y-1">
+        <!-- error: min GRID_SIZE -->
+        @if (canvasFiltersFormControl.get('gridSize')?.errors?.['min']) {
+        <div>Minimum value is {{ GRID_SIZE.MIN }}</div>
+
+        <!-- error: max GRID_SIZE -->
+        } @if (canvasFiltersFormControl.get('gridSize')?.errors?.['max']) {
+        <div>Maximum value is {{ GRID_SIZE.MAX }}</div>
+        }
       </div>
+      }
     </div>
 
     <!-- Node Size Slider -->
@@ -142,20 +145,21 @@
       />
 
       <!-- Error Messages -->
-      <div
-        *ngIf="
-          canvasFiltersFormControl.get('nodeSize')?.errors &&
-          canvasFiltersFormControl.get('nodeSize')?.touched
-        "
-        class="text-sm text-accent-primary space-y-1"
-      >
-        <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['min']">
-          Minimum value is {{ NODE_SIZE.MIN }}
-        </div>
-        <div *ngIf="canvasFiltersFormControl.get('nodeSize')?.errors?.['max']">
-          Maximum value is {{ NODE_SIZE.MAX }}
-        </div>
+      @if ( canvasFiltersFormControl.get('nodeSize')?.errors &&
+      canvasFiltersFormControl.get('nodeSize')?.touched) {
+
+      <div class="text-sm text-accent-primary space-y-1">
+        <!-- error: min NODE_SIZE -->
+        @if (canvasFiltersFormControl.get('nodeSize')?.errors?.['min']) {
+        <div>Minimum value is {{ NODE_SIZE.MIN }}</div>
+        }
+
+        <!-- error: max NODE_SIZE -->
+        @if (canvasFiltersFormControl.get('nodeSize')?.errors?.['max']) {
+        <div>Maximum value is {{ NODE_SIZE.MAX }}</div>
+        }
       </div>
+      }
     </div>
 
     <!-- Spacing Slider -->
@@ -181,13 +185,10 @@
       />
 
       <!-- Error Messages -->
-      <div
-        *ngIf="
-          canvasFiltersFormControl.get('spacing')?.errors &&
-          canvasFiltersFormControl.get('spacing')?.touched
-        "
-        class="text-sm text-accent-primary space-y-1"
-      >
+      @if ( canvasFiltersFormControl.get('spacing')?.errors &&
+      canvasFiltersFormControl.get('spacing')?.touched ) {
+
+      <div class="text-sm text-accent-primary space-y-1">
         <!-- error: min spacing -->
         @if ( canvasFiltersFormControl.get('spacing')?.errors?.['min'] ) {
         <div>Minimum value is {{ SPACING.MIN }}</div>
@@ -198,6 +199,7 @@
         <div>Maximum value is {{ SPACING.MAX }}</div>
         }
       </div>
+      }
     </div>
 
     <!-- Connectivity Selector -->
@@ -222,6 +224,7 @@
       <!-- Error Messages -->
       @if ( canvasFiltersFormControl.get('connectivitySelector')?.errors &&
       canvasFiltersFormControl.get('connectivitySelector')?.touched) {
+      <!-- error: no connectivity selected -->
       <div class="text-sm text-accent-primary">
         Please select a connectivity option
       </div>

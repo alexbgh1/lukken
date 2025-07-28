@@ -1,0 +1,17 @@
+<main-layout>
+  <h1 class="text-3xl font-bold mb-2">Dead Pixels</h1>
+  <p class="mb-4 text-text-secondary">
+    This page showcases the dead pixels feature. You can identify and manage
+    dead pixels in your photos.
+  </p>
+
+  <div class="flex flex-col gap-4 lg:flex-row">
+    <dead-pixels-filters></dead-pixels-filters>
+    <div class="w-full flex flex-col gap-4">
+      <dead-pixels-buttons></dead-pixels-buttons>
+      <dead-pixels-canvas></dead-pixels-canvas>
+      <dead-pixels-legend-wrapper></dead-pixels-legend-wrapper>
+    </div>
+  </div>
+  <dead-pixels-modal></dead-pixels-modal>
+</main-layout>

@@ -1,10 +1,14 @@
 import { Component } from '@angular/core';
 import { MainLayoutComponent } from '../../layouts/main-layout/main-layout.component';
-import { FiltersComponent } from './components/filters.component';
-import { CanvasComponent } from './components/canvas.component';
+import { Three3dFiltersComponent } from './components/filters.component';
+import { Three3DCanvasComponent } from './components/canvas.component';
 
 @Component({
-  imports: [MainLayoutComponent, FiltersComponent, CanvasComponent],
+  imports: [
+    MainLayoutComponent,
+    Three3dFiltersComponent,
+    Three3DCanvasComponent,
+  ],
   selector: 'app-three-d-nodes',
   templateUrl: './three-d-nodes.component.html',
 })
