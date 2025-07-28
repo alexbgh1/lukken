@@ -22,7 +22,13 @@ import {
 
 @Component({
   selector: 'three-d-nodes-canvas',
-  template: '<canvas #threeCanvas></canvas>',
+  template: `<div class="relative">
+    <canvas
+      class="bg-bg-canvas max-w-full"
+      [style.transform-origin]="transformOrigin"
+      #threeCanvas
+    ></canvas>
+  </div>`,
   styles: [
     `
       canvas {
@@ -35,6 +41,8 @@ import {
   standalone: true,
 })
 export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {
+  transformOrigin = '0 0';
+
   private canvas!: HTMLCanvasElement;
 
   private scene!: THREE.Scene;
@@ -134,20 +142,6 @@ export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {
       LIGHTING_CONFIG.DIRECTIONAL_LIGHT.POSITION.Z
     );
     this.scene.add(directionalLight);
-
-    window.addEventListener('resize', () => {
-      console.log('Window resized, updating canvas size, camera, and renderer');
-
-      console.log('values before update: ', {
-        width: this.canvas.clientWidth,
-        height: this.canvas.clientHeight,
-        aspect: this.camera.aspect,
-      });
-
-      this.camera.aspect = this.canvas.clientWidth / this.canvas.clientHeight;
-      this.camera.updateProjectionMatrix();
-      this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
-    });
   }
 
   private animate(): void {
@@ -169,16 +163,36 @@ export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d')!;
 
-    // Set canvas dimensions based on image size
+    // ✅ Usar el método existente para calcular dimensiones optimizadas
     const { width, height } = this.calculateDimensions(
       this.currentImage,
       IMAGE_PROCESSING.MAX_DIMENSION
     );
+
     canvas.width = width;
     canvas.height = height;
     ctx.drawImage(this.currentImage, 0, 0, width, height);
 
     this.generateGraph(canvas, filters);
+  }
+
+  private calculateDimensions(
+    img: HTMLImageElement,
+    maxDim: number
+  ): { width: number; height: number } {
+    let width = img.width;
+    let height = img.height;
+
+    // Mantener aspect ratio
+    if (width > height && width > maxDim) {
+      height = (maxDim / width) * height;
+      width = maxDim;
+    } else if (height > maxDim) {
+      width = (maxDim / height) * width;
+      height = maxDim;
+    }
+
+    return { width, height };
   }
 
   private loadImage(file: File): Promise<HTMLImageElement> {
@@ -191,25 +205,6 @@ export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {
       };
       reader.readAsDataURL(file);
     });
-  }
-
-  private calculateDimensions(
-    img: HTMLImageElement,
-    maxDim: number
-  ): { width: number; height: number } {
-    let width = img.width;
-    let height = img.height;
-
-    // Maintain aspect ratio
-    if (width > height && width > maxDim) {
-      height = (maxDim / width) * height;
-      width = maxDim;
-    } else if (height > maxDim) {
-      width = (maxDim / height) * width;
-      height = maxDim;
-    }
-
-    return { width, height };
   }
 
   private generateGraph(
