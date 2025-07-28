@@ -1,18 +1,92 @@
-<nav class="sticky top-0 z-50">
-  <ul
-    class="flex space-x-4 p-4 bg-bg-secondary border-b border-border justify-end"
-  >
-    @for (item of navLinks; track $index) {
-    <li>
-      <a
-        [routerLink]="[item.href]"
-        [routerLinkActive]="['bg-bg-tertiary', 'text-white']"
-        class="px-4 py-2 rounded-md text-text-secondary hover:bg-hover active:bg-active transition-colors"
-        [routerLinkActiveOptions]="{ exact: true }"
+<nav
+  class="fixed top-0 left-0 right-0 z-50 bg-bg-secondary border-b border-border"
+>
+  <div class="px-4 py-4">
+    <!-- Desktop Navigation (sm and up) -->
+    <ul class="hidden sm:flex space-x-4 justify-end">
+      @for (item of navLinks; track $index) {
+      <li>
+        <a
+          [routerLink]="[item.href]"
+          [routerLinkActive]="['bg-bg-tertiary', 'text-white']"
+          class="px-4 py-2 rounded-md text-text-secondary hover:bg-hover active:bg-active transition-colors"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          {{ item.name }}
+        </a>
+      </li>
+      }
+    </ul>
+
+    <!-- Mobile Navigation (below sm) -->
+    <div class="sm:hidden">
+      <!-- Mobile Header with Hamburger -->
+      <div class="flex justify-between items-center">
+        <div class="text-lg font-semibold text-text-primary">Pixel Perfect</div>
+
+        <!-- Hamburger Button -->
+        <button
+          (click)="toggleMenu()"
+          class="p-2 rounded-md text-text-secondary hover:bg-hover focus:outline-none focus:ring-2 focus:ring-accent-primary"
+          [attr.aria-expanded]="isMenuOpen"
+          aria-label="Toggle menu"
+        >
+          <!-- Hamburger Icon -->
+          <div
+            class="w-6 h-6 flex flex-col justify-center items-center space-y-1"
+          >
+            <span
+              class="block w-5 h-0.5 bg-current transition-transform duration-300"
+              [class.rotate-45]="isMenuOpen"
+              [class.translate-y-1.5]="isMenuOpen"
+            ></span>
+            <span
+              class="block w-5 h-0.5 bg-current transition-opacity duration-300"
+              [class.opacity-0]="isMenuOpen"
+            ></span>
+            <span
+              class="block w-5 h-0.5 bg-current transition-transform duration-300"
+              [class.-rotate-45]="isMenuOpen"
+              [class.-translate-y-1.5]="isMenuOpen"
+            ></span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Mobile Menu Dropdown - Fixed position -->
+      <div
+        class="absolute left-0 right-0 bg-bg-secondary border-b border-border transition-all duration-300 ease-in-out"
+        [class.max-h-0]="!isMenuOpen"
+        [class.max-h-screen]="isMenuOpen"
+        [class.opacity-0]="!isMenuOpen"
+        [class.opacity-100]="isMenuOpen"
+        [class.overflow-hidden]="!isMenuOpen"
       >
-        {{ item.name }}
-      </a>
-    </li>
-    }
-  </ul>
+        <ul class="px-4 py-4 space-y-2">
+          @for (item of navLinks; track $index) {
+          <li>
+            <a
+              [routerLink]="[item.href]"
+              [routerLinkActive]="['bg-bg-tertiary', 'text-white']"
+              class="block px-4 py-3 rounded-md text-text-secondary hover:bg-hover active:bg-active transition-colors"
+              [routerLinkActiveOptions]="{ exact: true }"
+              (click)="closeMenu()"
+            >
+              {{ item.name }}
+            </a>
+          </li>
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backdrop for mobile menu -->
+  @if (isMenuOpen) {
+  <div
+    class="fixed inset-0 bg-black bg-opacity-25 z-40 sm:hidden"
+    (click)="closeMenu()"
+    style="top: 100%"
+  ></div>
+  }
 </nav>

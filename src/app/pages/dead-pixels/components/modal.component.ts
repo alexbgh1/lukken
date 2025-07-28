@@ -22,7 +22,6 @@ import { PixelLegendComponent } from './pixel-legend.component';
 
 @Component({
   selector: 'dead-pixels-modal',
-  standalone: true,
   imports: [
     CommonModule,
     ZoomInIconComponent,
@@ -110,10 +109,12 @@ export class DeadPixelsModalComponent {
   }
 
   closeModal(): void {
+    console.log('Closing modal');
     this.canvasService.closeZoomModal();
   }
 
   toggleModalHighlight(): void {
+    console.log('Toggling highlight');
     this.modalHighlight.update((value) => !value);
     this.canvasService.updateModalHighlight(this.modalHighlight());
   }
@@ -122,40 +123,49 @@ export class DeadPixelsModalComponent {
     const newLevel = Math.min(this.zoomLevel() * 1.2, 500);
     this.zoomLevel.set(newLevel);
     this.canvasService.updateZoom(newLevel);
+    console.log('Zoom in to:', newLevel);
   }
 
   zoomOut(): void {
     const newLevel = Math.max(this.zoomLevel() / 1.2, 50);
     this.zoomLevel.set(newLevel);
     this.canvasService.updateZoom(newLevel);
+    console.log('Zoom out to:', newLevel);
   }
 
   resetZoom(): void {
+    console.log('Resetting zoom');
     this.zoomLevel.set(100);
     this.panOffset.set({ x: 0, y: 0 });
     this.canvasService.resetZoom();
   }
 
   startDrag(event: MouseEvent): void {
+    if (event.button !== 0) return;
+
     this.isDragging.set(true);
     this.dragStart.set({ x: event.clientX, y: event.clientY });
     event.preventDefault();
+    event.stopPropagation();
   }
 
   onDrag(event: MouseEvent): void {
-    if (this.isDragging()) {
-      const dx = event.clientX - this.dragStart().x;
-      const dy = event.clientY - this.dragStart().y;
+    if (!this.isDragging()) return;
 
-      const newOffset = {
-        x: this.panOffset().x + dx,
-        y: this.panOffset().y + dy,
-      };
+    const dx = event.clientX - this.dragStart().x;
+    const dy = event.clientY - this.dragStart().y;
 
-      this.panOffset.set(newOffset);
-      this.dragStart.set({ x: event.clientX, y: event.clientY });
-      this.canvasService.updatePan(newOffset);
-    }
+    const currentPan = this.panOffset();
+    const newOffset = {
+      x: currentPan.x + dx,
+      y: currentPan.y + dy,
+    };
+
+    this.panOffset.set(newOffset);
+    this.dragStart.set({ x: event.clientX, y: event.clientY });
+    this.canvasService.updatePan(newOffset);
+
+    event.preventDefault();
   }
 
   endDrag(): void {
@@ -164,9 +174,10 @@ export class DeadPixelsModalComponent {
 
   onWheel(event: WheelEvent): void {
     event.preventDefault();
+    event.stopPropagation();
 
-    // Get mouse position relative to the container for zoom toward cursor
-    const rect = (event.target as HTMLElement).getBoundingClientRect();
+    const container = event.currentTarget as HTMLElement;
+    const rect = container.getBoundingClientRect();
     const mouseX = event.clientX - rect.left;
     const mouseY = event.clientY - rect.top;
 
@@ -174,7 +185,6 @@ export class DeadPixelsModalComponent {
     const oldZoom = this.zoomLevel();
     const newZoom = Math.min(Math.max(oldZoom * delta, 50), 500);
 
-    // Calculate new pan to zoom toward mouse cursor
     if (newZoom !== oldZoom) {
       const zoomRatio = newZoom / oldZoom;
       const currentPan = this.panOffset();

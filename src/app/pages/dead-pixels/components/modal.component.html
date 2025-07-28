@@ -87,23 +87,28 @@
       </div>
       } @else {
       <div
-        class="relative w-full h-full overflow-hidden cursor-move"
+        class="relative w-full h-full overflow-hidden cursor-move select-none"
         [class.cursor-grabbing]="isDragging()"
         (mousedown)="startDrag($event)"
         (mousemove)="onDrag($event)"
         (mouseup)="endDrag()"
         (mouseleave)="endDrag()"
         (wheel)="onWheel($event)"
+        style="min-height: 400px"
       >
-        <dead-pixels-canvas
-          [useFiltersService]="false"
-          [customImage]="currentImage"
-          [customSensitivity]="currentSensitivity"
-          [canvasClass]="'block max-w-none'"
-          [transform]="canvasTransform"
-          [showHighlights]="modalHighlight()"
-          (imageProcessed)="onImageProcessed($event)"
-        ></dead-pixels-canvas>
+        <div
+          class="transform-gpu transition-transform duration-100 ease-out origin-top-left"
+          [style.transform]="canvasTransform"
+        >
+          <dead-pixels-canvas
+            [useFiltersService]="false"
+            [customImage]="currentImage"
+            [customSensitivity]="currentSensitivity"
+            [canvasClass]="'block max-w-none'"
+            [showHighlights]="modalHighlight()"
+            (imageProcessed)="onImageProcessed($event)"
+          ></dead-pixels-canvas>
+        </div>
       </div>
       }
     </div>
