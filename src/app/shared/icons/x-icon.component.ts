@@ -3,9 +3,9 @@ import { cn } from '../utils/cn';
 
 @Component({
   selector: 'x-icon',
-  standalone: true,
   template: `
     <svg
+      [class]="mergedClassList()"
       xmlns="http://www.w3.org/2000/svg"
       width="24"
       height="24"

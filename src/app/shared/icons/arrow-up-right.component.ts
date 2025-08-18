@@ -1,8 +1,9 @@
 import { Component, Input } from '@angular/core';
-import { cn } from '../../utils/cn';
+import { cn } from '../utils/cn';
 
 @Component({
-  selector: 'download-icon',
+  selector: 'arrow-up-right-icon',
+  standalone: true,
   template: `
     <svg
       [class]="mergedClassList()"
@@ -15,15 +16,14 @@ import { cn } from '../../utils/cn';
       stroke-width="2"
       stroke-linecap="round"
       stroke-linejoin="round"
-      class="lucide lucide-download-icon lucide-download"
+      class="lucide lucide-arrow-up-right-icon lucide-arrow-up-right"
     >
-      <path d="M12 15V3" />
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <path d="m7 10 5 5 5-5" />
+      <path d="M7 7h10v10" />
+      <path d="M7 17 17 7" />
     </svg>
   `,
 })
-export class DownloadIconComponent {
+export class ArrowUpRightIconComponent {
   baseClass: string = 'w-8 h-8 text-text-muted';
   @Input() className: string = '';
 

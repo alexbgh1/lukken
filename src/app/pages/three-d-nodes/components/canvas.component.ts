@@ -28,6 +28,13 @@ import {
       [style.transform-origin]="transformOrigin"
       #threeCanvas
     ></canvas>
+    <!-- Download Button -->
+    <button
+      (click)="downloadCanvas()"
+      class="absolute bottom-4 right-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+    >
+      Download Image
+    </button>
   </div>`,
   styles: [
     `
@@ -84,6 +91,41 @@ export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {
     if (this.renderer) {
       this.renderer.dispose();
     }
+  }
+
+  public downloadCanvas(): void {
+    // Temporarily increase render quality
+    const originalSize = {
+      width: this.renderer.getSize(new THREE.Vector2()).x,
+      height: this.renderer.getSize(new THREE.Vector2()).y,
+    };
+
+    // Render at higher resolution
+    this.renderer.setSize(
+      originalSize.width * 2,
+      originalSize.height * 2,
+      false
+    );
+    this.camera.aspect = (originalSize.width * 2) / (originalSize.height * 2);
+    this.camera.updateProjectionMatrix();
+    this.renderer.render(this.scene, this.camera);
+
+    // Create download
+    const image = this.renderer.domElement.toDataURL('image/png');
+    const link = document.createElement('a');
+    const fileName = `3d-nodes-${new Date().toISOString().slice(0, 10)}.png`;
+    link.download = fileName;
+    link.href = image;
+    link.click();
+
+    // Restore original size
+    this.renderer.setSize(originalSize.width, originalSize.height, false);
+    this.camera.aspect = originalSize.width / originalSize.height;
+    this.camera.updateProjectionMatrix();
+    this.renderer.render(this.scene, this.camera);
+
+    // Cleanup
+    link.remove();
   }
 
   private initThreeJS(): void {
@@ -161,7 +203,7 @@ export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {
     // Load image && set currentImage
     this.currentImage = await this.loadImage(filters.image);
     const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
 
     // ✅ Usar el método existente para calcular dimensiones optimizadas
     const { width, height } = this.calculateDimensions(
@@ -211,7 +253,7 @@ export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {
     canvas: HTMLCanvasElement,
     filters: CanvasFilters
   ): void {
-    const ctx = canvas.getContext('2d')!;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
     const { gridSize, nodeSize, spacing, connectivitySelector } = filters;
 
     // Rows and cols: used to determine the number of nodes

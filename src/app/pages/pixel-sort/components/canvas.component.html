@@ -1,0 +1,14 @@
+<div
+  class="flex justify-center items-center w-full h-full mt-4 transition-opacity duration-500"
+  [class.opacity-100]="hasImage()"
+  [class.opacity-0]="!hasImage()"
+>
+  @if (imageToShow()) {
+  <img
+    [src]="imageToShow()!.src"
+    class="max-w-full max-h-[90vh] object-contain rounded border border-border shadow-lg"
+    alt="Processed image"
+    loading="lazy"
+  />
+  }
+</div>

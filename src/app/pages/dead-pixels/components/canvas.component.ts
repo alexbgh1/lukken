@@ -164,7 +164,7 @@ export class DeadPixelsCanvasComponent {
     canvas.width = img.width;
     canvas.height = img.height;
 
-    this.ctx = canvas.getContext('2d')!;
+    this.ctx = canvas.getContext('2d', { willReadFrequently: true })!;
     this.ctx.drawImage(img, 0, 0);
 
     const imageData = this.ctx.getImageData(0, 0, canvas.width, canvas.height);

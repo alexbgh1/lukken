@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { ArrowUpRightIconComponent } from '../../shared/icons/arrow-up-right.component';
+import { NAV_LINKS_OBJECTS } from '../../shared/constants/nav-links.constants';
 
 interface Tool {
   id: string;
@@ -12,47 +14,19 @@ interface Tool {
 }
 
 @Component({
+  imports: [RouterLink, ArrowUpRightIconComponent],
   selector: 'app-landing',
-  imports: [
-    CommonModule,
-    // CameraIconComponent,
-    // EyeIconComponent,
-    // ShuffleIconComponent,
-    // Layers3IconComponent,
-    // ArrowRightIconComponent,
-    // ChevronDownIconComponent,
-    // GithubIconComponent,
-    // TwitterIconComponent,
-    // MailIconComponent,
-  ],
   templateUrl: './landing.component.html',
 })
 export class LandingComponent implements OnInit {
   activeSection = 0;
   isVisible = false;
 
+  NAV_LINKS_OBJECTS = NAV_LINKS_OBJECTS;
+
   ngOnInit(): void {
     setTimeout(() => {
       this.isVisible = true;
     }, 100);
-  }
-
-  scrollToSection(sectionId: string): void {
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  }
-
-  setActiveSection(index: number): void {
-    this.activeSection = index;
-  }
-
-  trackByTool(index: number, tool: Tool): string {
-    return tool.id;
-  }
-
-  trackByFeature(index: number, feature: string): string {
-    return feature;
   }
 }

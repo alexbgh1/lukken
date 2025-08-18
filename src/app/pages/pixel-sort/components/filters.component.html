@@ -1,0 +1,149 @@
+<!-- Controls Panel -->
+<button
+  (click)="toggleControls()"
+  class="z-20 px-3 py-2 bg-bg-secondary hover:bg-hover rounded border border-border text-text-primary transition-colors"
+>
+  {{ showControls ? "Hide" : "Show" }} Controls
+</button>
+
+<div
+  class="bg-bg-secondary bg-opacity-90 p-4 rounded-lg transition-all duration-300 shadow-lg border border-border max-w-xs"
+  [class.hidden]="!showControls"
+>
+  <!-- File Upload Section -->
+  <div class="mb-4 p-3 bg-bg-tertiary rounded border border-border">
+    <label for="fileInput" class="font-bold block mb-2 text-text-primary"
+      >Select an image:</label
+    >
+    <div class="flex flex-col gap-2">
+      <input
+        #fileInput
+        type="file"
+        class="text-sm"
+        accept="image/*"
+        (change)="onFileUpload($event)"
+      />
+      <div class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="stackOutput"
+          [checked]="filtersService.filters().stackOutput"
+          (change)="toggleStackOutput()"
+          class="text-accent-primary"
+        />
+        <label for="stackOutput" class="text-text-secondary text-sm"
+          >Stack Output</label
+        >
+      </div>
+      <button
+        (click)="resetImage()"
+        class="px-3 py-2 bg-bg-secondary hover:bg-hover rounded border border-border text-text-primary transition-colors text-sm"
+        [disabled]="canvasService.isProcessing()"
+      >
+        Reset
+      </button>
+    </div>
+  </div>
+
+  <!-- Threshold Section -->
+  <div class="mb-4 p-3 bg-bg-tertiary rounded border border-border">
+    <label class="font-bold block mb-2 text-text-primary">Threshold:</label>
+    <div class="flex flex-col gap-2">
+      <canvas
+        #histogramCanvas
+        [width]="CONFIG.CANVAS.HISTOGRAM_WIDTH"
+        [height]="CONFIG.CANVAS.HISTOGRAM_HEIGHT"
+        class="mb-2"
+      ></canvas>
+
+      <input
+        type="range"
+        [min]="CONFIG.THRESHOLD.MIN"
+        [max]="CONFIG.THRESHOLD.MAX"
+        [value]="filtersService.filters().threshold"
+        (input)="onThresholdChange(+$any($event.target).value)"
+        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
+      />
+
+      <div class="text-center text-sm text-text-secondary mb-2">
+        {{ filtersService.filters().threshold }}
+      </div>
+
+      <select
+        [value]="filtersService.filters().mode"
+        (change)="onModeChange($any($event.target).value)"
+        class="mb-2 p-2 rounded bg-bg-secondary border border-border text-text-primary text-sm"
+      >
+        @for (mode of MODES; track mode.value) {
+        <option [value]="mode.value">{{ mode.label }}</option>
+        }
+      </select>
+
+      <div class="flex items-center gap-2">
+        <input
+          type="checkbox"
+          id="invert"
+          [checked]="filtersService.filters().invert"
+          (change)="toggleInvert()"
+          class="text-accent-primary"
+        />
+        <label for="invert" class="text-text-secondary text-sm">Invert</label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Angle Section -->
+  <div class="mb-4 p-3 bg-bg-tertiary rounded border border-border">
+    <label class="font-bold block mb-2 text-text-primary">Angle:</label>
+    <div class="flex flex-col gap-2">
+      <canvas
+        #angleCanvas
+        [width]="CONFIG.CANVAS.ANGLE_CIRCLE_SIZE"
+        [height]="CONFIG.CANVAS.ANGLE_CIRCLE_SIZE"
+        class="mx-auto mb-2"
+      ></canvas>
+
+      <input
+        type="range"
+        [min]="CONFIG.ANGLE.MIN"
+        [max]="CONFIG.ANGLE.MAX"
+        [value]="filtersService.filters().angle"
+        (input)="onAngleChange(+$any($event.target).value)"
+        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
+      />
+
+      <div class="text-center text-sm text-text-secondary mb-2">
+        {{ filtersService.filters().angle }}°
+      </div>
+
+      <div class="grid grid-cols-3 gap-1">
+        @for (angle of CONFIG.ANGLE.PRESETS.slice(0, -1); track angle) {
+        <button
+          (click)="setAngle(angle)"
+          class="px-2 py-1 bg-bg-secondary hover:bg-hover rounded text-xs border border-border text-text-primary transition-colors"
+          [disabled]="canvasService.isProcessing()"
+          [class.bg-accent-primary]="filtersService.filters().angle === angle"
+          [class.text-bg-primary]="filtersService.filters().angle === angle"
+        >
+          {{ angle }}°
+        </button>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Process Button -->
+  <div class="p-3 bg-bg-tertiary rounded border border-border">
+    <button
+      (click)="processImage()"
+      class="w-full px-4 py-3 bg-accent-primary hover:bg-accent-secondary text-bg-primary rounded font-bold transition-colors disabled:opacity-50"
+      [disabled]="
+        canvasService.isProcessing() || !canvasService.originalImage()
+      "
+    >
+      @if (canvasService.isProcessing()) { Processing... } @else { Sort Image }
+    </button>
+  </div>
+</div>
+
+<!-- Toggle Controls Button -->

@@ -3,7 +3,6 @@ import { cn } from '../../utils/cn';
 
 @Component({
   selector: 'upload-icon',
-  standalone: true,
   template: `
     <svg
       [class]="mergedClassList()"

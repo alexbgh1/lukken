@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NAV_LINKS } from '../../constants/nav-links.constants';
 
 @Component({
   selector: 'app-nav',
@@ -10,24 +11,7 @@ import { CommonModule } from '@angular/common';
 export class NavComponent {
   isMenuOpen = false;
 
-  navLinks = [
-    {
-      name: 'Home',
-      href: '/',
-    },
-    {
-      name: 'Dead Pixels',
-      href: '/dead-pixels',
-    },
-    {
-      name: 'Pixel Sort',
-      href: '/pixel-sort',
-    },
-    {
-      name: '3D Nodes',
-      href: '/3d-nodes',
-    },
-  ];
+  navLinks = NAV_LINKS;
 
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen;

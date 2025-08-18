@@ -3,7 +3,6 @@ import { cn } from '../../utils/cn';
 
 @Component({
   selector: 'zoom-out-icon',
-  standalone: true,
   template: `
     <svg
       [class]="mergedClassList()"

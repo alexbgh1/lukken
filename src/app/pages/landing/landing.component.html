@@ -59,37 +59,26 @@
       [class.opacity-0]="!isVisible"
       [class.translate-y-8]="!isVisible"
     >
-      <div class="mb-8">
-        <!-- <camera-icon
-          class="w-16 h-16 mx-auto mb-6 text-accent-primary"
-        ></camera-icon> -->
-      </div>
-
       <h1
-        class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-text-primary to-accent-primary bg-clip-text text-transparent"
+        class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-accent-primary from-30% to-100% to-accent-secondary bg-clip-text text-transparent"
       >
         NebulaPix
       </h1>
 
       <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto text-text-secondary">
-        Professional photography tools for pixel analysis, creative effects, and
-        data visualization
+        Visualize your photos in different ways
       </p>
 
-      <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-        <button
-          class="bg-accent-primary hover:bg-accent-secondary text-bg-primary font-semibold px-8 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 flex items-center justify-center"
-          (click)="scrollToSection('tools')"
+      <div class="flex flex-col sm:flex-row justify-center mb-12">
+        <a
+          [routerLink]="NAV_LINKS_OBJECTS.deadPixels.href"
+          class="gap-2 bg-accent-primary hover:bg-accent-secondary text-primary font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform flex items-center justify-center"
         >
           Explore Tools
-          <!-- <arrow-right-icon class="ml-2 w-5 h-5"></arrow-right-icon> -->
-        </button>
-
-        <button
-          class="border border-border text-text-primary hover:bg-hover px-8 py-3 rounded-lg transition-all duration-300 bg-transparent"
-        >
-          View Documentation
-        </button>
+          <arrow-up-right-icon
+            className="w-4 h-4 text-white"
+          ></arrow-up-right-icon>
+        </a>
       </div>
     </div>
   </section>

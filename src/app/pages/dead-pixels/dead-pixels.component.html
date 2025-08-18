@@ -1,9 +1,32 @@
 <main-layout>
   <h1 class="text-3xl font-bold mb-2">Dead Pixels</h1>
   <p class="mb-4 text-text-secondary">
-    This page showcases the dead pixels feature. You can identify and manage
-    dead pixels in your photos.
+    Dead pixels are pixels that do not respond to input or display correctly, to
+    identify some dead pixels, this programm will travel through the image and
+    will mark the dead pixels.
   </p>
+
+  <div>
+    <p class="text-text-secondary mb-4">
+      Tip: Take a photo with a dark background to help identify dead pixels more
+      easily.
+    </p>
+  </div>
+
+  <ul class="mb-6">
+    <pixel-legend
+      [pixelType]="PixelType.DEAD"
+      description="are pixels that remain unlit (full black) or display incorrect colors."
+    ></pixel-legend>
+    <pixel-legend
+      [pixelType]="PixelType.HOT"
+      description="are pixels that are always on (full white) or display incorrect colors."
+    ></pixel-legend>
+    <pixel-legend
+      [pixelType]="PixelType.STUCK"
+      description="Are pixels that are stuck on a specific color (red, green, blue, etc.) and do not change."
+    ></pixel-legend>
+  </ul>
 
   <div class="flex flex-col gap-4 lg:flex-row">
     <dead-pixels-filters></dead-pixels-filters>
