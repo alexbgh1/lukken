@@ -27,4 +27,9 @@ export const routes: Routes = [
         (module) => module.PixelSortComponent
       ),
   },
+  {
+    path: '**',
+    redirectTo: '',
+    pathMatch: 'full',
+  },
 ];

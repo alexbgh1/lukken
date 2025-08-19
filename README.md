@@ -15,8 +15,11 @@ ng serve
 # previous step
 ng add angular-cli-ghpages
 
-# deploy
+# creating branch
 ng build --output-path=dist --base-href="/nebula-pix/"
 git checkout -b gh-pages
 ng build --output-path docs --base-href /nebula-pix/
+
+# deploy
+ng deploy
 ```
