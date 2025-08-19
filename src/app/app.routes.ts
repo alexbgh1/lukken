@@ -1,8 +1,5 @@
 import { Routes } from '@angular/router';
-import { ThreeDNodesComponent } from './pages/three-d-nodes/three-d-nodes.component';
-import { DeadPixelsComponent } from './pages/dead-pixels/dead-pixels.component';
 import { LandingComponent } from './pages/landing/landing.component';
-import { PixelSortComponent } from './pages/pixel-sort/pixel-sort.component';
 
 export const routes: Routes = [
   {
@@ -11,14 +8,23 @@ export const routes: Routes = [
   },
   {
     path: '3d-nodes',
-    component: ThreeDNodesComponent,
+    loadComponent: () =>
+      import('./pages/three-d-nodes/three-d-nodes.component').then(
+        (module) => module.ThreeDNodesComponent
+      ),
   },
   {
     path: 'dead-pixels',
-    component: DeadPixelsComponent,
+    loadComponent: () =>
+      import('./pages/dead-pixels/dead-pixels.component').then(
+        (module) => module.DeadPixelsComponent
+      ),
   },
   {
     path: 'pixel-sort',
-    component: PixelSortComponent,
+    loadComponent: () =>
+      import('./pages/pixel-sort/pixel-sort.component').then(
+        (module) => module.PixelSortComponent
+      ),
   },
 ];
