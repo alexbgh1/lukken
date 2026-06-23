@@ -1,9 +1,10 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { cn } from '../../shared/utils/cn';
 
 @Component({
   imports: [],
   selector: 'main-layout',
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './main-layout.component.html',
 })
 export class MainLayoutComponent {

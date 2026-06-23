@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef, effect } from '@angular/core';
+import { Component, ViewChild, ElementRef, effect, ChangeDetectionStrategy } from '@angular/core';
 
 import { FormsModule } from '@angular/forms';
 import { PixelSortFiltersService } from '../services/filters.service';
@@ -13,6 +13,7 @@ import {
   selector: 'pixel-sort-filters',
   imports: [FormsModule],
   templateUrl: './filters.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class PixelSortFiltersComponent {

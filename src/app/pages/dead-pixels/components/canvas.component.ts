@@ -7,6 +7,7 @@ import {
   Output,
   EventEmitter,
   signal,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import { FiltersDataService } from '../services/filters-data.service';
 import { DeadPixelsCanvasService } from '../services/canvas.service';
@@ -35,6 +36,7 @@ import { PIXEL_DETECTION, SENSITIVITY } from '../constants/canvas.constants';
       }
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [
     `
       canvas {

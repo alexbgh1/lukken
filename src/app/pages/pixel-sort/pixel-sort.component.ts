@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MainLayoutComponent } from '../../layouts/main-layout/main-layout.component';
 import { PixelSortFiltersComponent } from './components/filters.component';
 import { PixelSortCanvasComponent } from './components/canvas.component';
@@ -10,6 +10,7 @@ import { PixelSortCanvasComponent } from './components/canvas.component';
     PixelSortCanvasComponent,
   ],
   selector: 'pixel-sort',
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './pixel-sort.component.html',
 })
 export class PixelSortComponent {}

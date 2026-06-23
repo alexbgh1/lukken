@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UploadIconComponent } from '../../../shared/icons';
 import {
   FormGroup,
@@ -16,6 +16,7 @@ import { FiltersDataService } from '../services/filters-data.service';
 @Component({
   imports: [ReactiveFormsModule, UploadIconComponent],
   selector: 'dead-pixels-filters',
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './filters.component.html',
 })
 export class DeadPixelsFiltersComponent {

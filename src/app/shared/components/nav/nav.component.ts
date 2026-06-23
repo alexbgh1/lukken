@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import { NAV_LINKS } from '../../constants/nav-links.constants';
@@ -6,6 +6,7 @@ import { NAV_LINKS } from '../../constants/nav-links.constants';
 @Component({
   selector: 'app-nav',
   imports: [RouterLink, RouterLinkActive],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './nav.component.html',
 })
 export class NavComponent {

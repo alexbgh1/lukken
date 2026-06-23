@@ -4,6 +4,7 @@ import {
   AfterViewInit,
   OnDestroy,
   effect,
+  ChangeDetectionStrategy
 } from '@angular/core';
 import * as THREE from 'three';
 import { CanvasFilters } from '../../../interfaces/three-d-nodes-filters.interface';
@@ -45,6 +46,7 @@ import {
       }
     `,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {

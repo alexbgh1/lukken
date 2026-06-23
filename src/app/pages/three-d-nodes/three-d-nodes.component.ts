@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MainLayoutComponent } from '../../layouts/main-layout/main-layout.component';
 import { Three3dFiltersComponent } from './components/filters.component';
 import { Three3DCanvasComponent } from './components/canvas.component';
@@ -10,6 +10,7 @@ import { Three3DCanvasComponent } from './components/canvas.component';
     Three3DCanvasComponent,
   ],
   selector: 'app-three-d-nodes',
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './three-d-nodes.component.html',
 })
 export class ThreeDNodesComponent {}

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -25,6 +25,7 @@ import { UploadIconComponent } from '../../../shared/icons';
     UploadIconComponent,
   ],
   selector: 'three-d-filters',
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './filters.component.html',
 })
 export class Three3dFiltersComponent {

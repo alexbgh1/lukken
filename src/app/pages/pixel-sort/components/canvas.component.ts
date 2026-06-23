@@ -1,4 +1,4 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, ChangeDetectionStrategy } from '@angular/core';
 
 import { PixelSortCanvasService } from '../services/canvas.service';
 
@@ -6,6 +6,7 @@ import { PixelSortCanvasService } from '../services/canvas.service';
   selector: 'pixel-sort-canvas',
   imports: [],
   templateUrl: './canvas.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
 })
 export class PixelSortCanvasComponent {

@@ -4,6 +4,7 @@ import {
   signal,
   ViewChild,
   AfterViewInit,
+  ChangeDetectionStrategy
 } from '@angular/core';
 
 import {
@@ -31,6 +32,7 @@ import { PixelLegendComponent } from './pixel-legend.component';
     PixelLegendComponent
 ],
   templateUrl: './modal.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [],
 })
 export class DeadPixelsModalComponent {

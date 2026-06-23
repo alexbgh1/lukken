@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import {
   PIXEL_LEGENDS,
   PixelType,
@@ -8,6 +8,7 @@ import {
   selector: 'pixel-legend',
   standalone: true,
   imports: [],
+  changeDetection: ChangeDetectionStrategy.Eager,
   template: `
     <div class="flex items-center gap-2">
       @switch (pixelType()) {

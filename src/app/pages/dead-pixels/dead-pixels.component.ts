@@ -1,5 +1,5 @@
 // dead-pixels.component.ts
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MainLayoutComponent } from '../../layouts/main-layout/main-layout.component';
 import { DeadPixelsFiltersComponent } from './components/filters.component';
 import { DeadPixelsCanvasComponent } from './components/canvas.component';
@@ -20,6 +20,7 @@ import { PixelType } from '../../interfaces/dead-pixels.interface';
     DeadPixelsLegendWrapperComponent,
     PixelLegendComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './dead-pixels.component.html',
 })
 export class DeadPixelsComponent {

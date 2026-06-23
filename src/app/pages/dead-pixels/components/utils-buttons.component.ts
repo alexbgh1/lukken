@@ -1,4 +1,4 @@
-import { Component, HostBinding } from '@angular/core';
+import { Component, HostBinding, ChangeDetectionStrategy } from '@angular/core';
 
 import {
   EyeIconComponent,
@@ -18,6 +18,7 @@ import { DeadPixelsCanvasService } from '../services/canvas.service';
     ZoomInIconComponent
 ],
   templateUrl: './utils-buttons.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styles: [],
 })
 export class DeadPixelsUtilsButtonsComponent {
