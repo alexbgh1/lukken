@@ -54,10 +54,10 @@
 
     <div
       class="relative z-10 text-center max-w-4xl mx-auto px-6 transition-all duration-1000"
-      [class.opacity-100]="isVisible"
-      [class.translate-y-0]="isVisible"
-      [class.opacity-0]="!isVisible"
-      [class.translate-y-8]="!isVisible"
+      [class.opacity-100]="isVisible()"
+      [class.translate-y-0]="isVisible()"
+      [class.opacity-0]="!isVisible()"
+      [class.translate-y-8]="!isVisible()"
     >
       <h1
         class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-accent-primary from-30% to-100% to-accent-secondary bg-clip-text text-transparent"
