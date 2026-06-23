@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ArrowUpRightIconComponent } from '../../shared/icons/arrow-up-right.component';
-import { NAV_LINKS_OBJECTS } from '../../shared/constants/nav-links.constants';
+import { ArrowUpRightIconComponent } from '@shared/icons/arrow-up-right.component';
+import { NAV_LINKS_OBJECTS } from '@shared/constants/nav-links.constants';
 
 interface Tool {
   id: string;

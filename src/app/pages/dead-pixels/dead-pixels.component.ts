@@ -7,7 +7,7 @@ import { DeadPixelsModalComponent } from './components/modal.component';
 import { DeadPixelsUtilsButtonsComponent } from './components/utils-buttons.component';
 import { DeadPixelsLegendWrapperComponent } from './components/pixel-legend-wrapper.component';
 import { PixelLegendComponent } from './components/pixel-legend.component';
-import { PixelType } from '../../interfaces/dead-pixels.interface';
+import { PixelType } from '@interfaces/dead-pixels.interface';
 
 @Component({
   selector: 'app-dead-pixels',

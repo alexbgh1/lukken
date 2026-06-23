@@ -1,5 +1,5 @@
 import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
-import { cn } from '../../shared/utils/cn';
+import { cn } from '@shared/utils/cn';
 
 @Component({
   imports: [],

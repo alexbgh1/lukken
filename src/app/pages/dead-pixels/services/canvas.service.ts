@@ -8,7 +8,7 @@ import {
 import {
   DeadPixel,
   PixelType,
-} from '../../../interfaces/dead-pixels.interface';
+} from '@interfaces/dead-pixels.interface';
 
 /*
   * CanvasService is responsible for managing the canvas state and operations

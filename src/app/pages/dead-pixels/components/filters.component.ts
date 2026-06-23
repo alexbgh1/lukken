@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { UploadIconComponent } from '../../../shared/icons';
+import { UploadIconComponent } from '@shared/icons';
 import {
   FormGroup,
   ReactiveFormsModule,
@@ -10,7 +10,7 @@ import { FILE_CONFIG, SENSITIVITY } from '../constants/canvas.constants';
 import {
   CanvasFilters,
   FormFilters,
-} from '../../../interfaces/dead-pixels.interface';
+} from '@interfaces/dead-pixels.interface';
 import { FiltersDataService } from '../services/filters-data.service';
 
 @Component({

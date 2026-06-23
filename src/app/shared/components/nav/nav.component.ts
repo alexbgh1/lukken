@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
-import { NAV_LINKS } from '../../constants/nav-links.constants';
+import { NAV_LINKS } from '@shared/constants/nav-links.constants';
 
 @Component({
   selector: 'app-nav',

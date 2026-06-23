@@ -5,7 +5,7 @@ import { PixelLegendComponent } from './pixel-legend.component';
 import {
   DeadPixel,
   PixelType,
-} from '../../../interfaces/dead-pixels.interface';
+} from '@interfaces/dead-pixels.interface';
 
 @Component({
   selector: 'dead-pixels-legend-wrapper',

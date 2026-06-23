@@ -15,7 +15,7 @@ import {
   CanvasFilters,
   DeadPixel,
   PixelType,
-} from '../../../interfaces/dead-pixels.interface';
+} from '@interfaces/dead-pixels.interface';
 import { PIXEL_DETECTION, SENSITIVITY } from '../constants/canvas.constants';
 
 @Component({

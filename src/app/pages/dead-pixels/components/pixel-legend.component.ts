@@ -2,7 +2,7 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import {
   PIXEL_LEGENDS,
   PixelType,
-} from '../../../interfaces/dead-pixels.interface';
+} from '@interfaces/dead-pixels.interface';
 
 @Component({
   selector: 'pixel-legend',

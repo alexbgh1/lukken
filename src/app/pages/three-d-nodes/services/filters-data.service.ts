@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { CanvasFilters } from '../../../interfaces/three-d-nodes-filters.interface';
+import { CanvasFilters } from '@interfaces/three-d-nodes-filters.interface';
 
 @Injectable({
   providedIn: 'root',

@@ -4,7 +4,7 @@ import {
   signal,
   ViewChild,
   AfterViewInit,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
 } from '@angular/core';
 
 import {
@@ -12,13 +12,10 @@ import {
   ZoomOutIconComponent,
   MoveIconComponent,
   XIconComponent,
-} from '../../../shared/icons';
+} from '@shared/icons';
 import { DeadPixelsCanvasService } from '../services/canvas.service';
 import { DeadPixelsCanvasComponent } from './canvas.component';
-import {
-  DeadPixel,
-  PixelType,
-} from '../../../interfaces/dead-pixels.interface';
+import { DeadPixel, PixelType } from '@interfaces/dead-pixels.interface';
 import { PixelLegendComponent } from './pixel-legend.component';
 
 @Component({
@@ -29,10 +26,10 @@ import { PixelLegendComponent } from './pixel-legend.component';
     MoveIconComponent,
     XIconComponent,
     DeadPixelsCanvasComponent,
-    PixelLegendComponent
-],
+    PixelLegendComponent,
+  ],
   templateUrl: './modal.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [],
 })
 export class DeadPixelsModalComponent {

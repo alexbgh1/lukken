@@ -3,6 +3,11 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "paths": {
+      "@interfaces/*": ["./src/app/interfaces/*"],
+      "@shared/*": ["./src/app/shared/*"]
+    },
+    "rootDir": "./src",
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,

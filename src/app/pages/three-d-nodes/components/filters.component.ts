@@ -12,10 +12,10 @@ import {
   CanvasFilters,
   ConnectivityOptions,
   FormFilters,
-} from '../../../interfaces/three-d-nodes-filters.interface';
+} from '@interfaces/three-d-nodes-filters.interface';
 
 import { FiltersDataService } from '../services/filters-data.service';
-import { UploadIconComponent } from '../../../shared/icons';
+import { UploadIconComponent } from '@shared/icons';
 
 @Component({
   imports: [

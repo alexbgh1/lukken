@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { CanvasFilters } from '../../../interfaces/dead-pixels.interface';
+import { CanvasFilters } from '@interfaces/dead-pixels.interface';
 
 @Injectable({
   providedIn: 'root',

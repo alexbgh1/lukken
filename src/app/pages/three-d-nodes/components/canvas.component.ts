@@ -7,7 +7,7 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import * as THREE from 'three';
-import { CanvasFilters } from '../../../interfaces/three-d-nodes-filters.interface';
+import { CanvasFilters } from '@interfaces/three-d-nodes-filters.interface';
 import { FiltersDataService } from '../services/filters-data.service';
 import { OrbitControls } from 'three-stdlib';
 import {

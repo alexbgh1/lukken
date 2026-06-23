@@ -5,7 +5,7 @@ import {
   EyeOffIconComponent,
   DownloadIconComponent,
   ZoomInIconComponent,
-} from '../../../shared/icons';
+} from '@shared/icons';
 import { DeadPixelsCanvasService } from '../services/canvas.service';
 
 @Component({
