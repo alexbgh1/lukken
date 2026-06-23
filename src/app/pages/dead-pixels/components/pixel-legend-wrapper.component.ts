@@ -1,5 +1,5 @@
 import { Component, effect, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { DeadPixelsCanvasService } from '../services/canvas.service';
 import { PixelLegendComponent } from './pixel-legend.component';
 import {
@@ -10,7 +10,7 @@ import {
 @Component({
   selector: 'dead-pixels-legend-wrapper',
   standalone: true,
-  imports: [CommonModule, PixelLegendComponent],
+  imports: [PixelLegendComponent],
   template: `
     @if (hasPixelData()) {
     <div class="flex gap-4 items-center">

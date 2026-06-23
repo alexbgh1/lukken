@@ -5,7 +5,7 @@ import {
   ViewChild,
   AfterViewInit,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   ZoomInIconComponent,
   ZoomOutIconComponent,
@@ -23,14 +23,13 @@ import { PixelLegendComponent } from './pixel-legend.component';
 @Component({
   selector: 'dead-pixels-modal',
   imports: [
-    CommonModule,
     ZoomInIconComponent,
     ZoomOutIconComponent,
     MoveIconComponent,
     XIconComponent,
     DeadPixelsCanvasComponent,
-    PixelLegendComponent,
-  ],
+    PixelLegendComponent
+],
   templateUrl: './modal.component.html',
   styles: [],
 })

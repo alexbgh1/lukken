@@ -1,5 +1,5 @@
 import { Component, ViewChild, ElementRef, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { PixelSortFiltersService } from '../services/filters.service';
 import { PixelSortCanvasService } from '../services/canvas.service';
@@ -11,7 +11,7 @@ import {
 
 @Component({
   selector: 'pixel-sort-filters',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './filters.component.html',
   standalone: true,
 })

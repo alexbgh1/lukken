@@ -1,10 +1,10 @@
 import { Component, computed, inject } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { PixelSortCanvasService } from '../services/canvas.service';
 
 @Component({
   selector: 'pixel-sort-canvas',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './canvas.component.html',
   standalone: true,
 })

@@ -1,5 +1,5 @@
 import { Component, HostBinding } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   EyeIconComponent,
   EyeOffIconComponent,
@@ -12,12 +12,11 @@ import { DeadPixelsCanvasService } from '../services/canvas.service';
   selector: 'dead-pixels-buttons',
   standalone: true,
   imports: [
-    CommonModule,
     EyeIconComponent,
     EyeOffIconComponent,
     DownloadIconComponent,
-    ZoomInIconComponent,
-  ],
+    ZoomInIconComponent
+],
   templateUrl: './utils-buttons.component.html',
   styles: [],
 })
