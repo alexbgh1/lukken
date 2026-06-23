@@ -11,7 +11,7 @@ import {
   selector: 'dead-pixels-legend-wrapper',
   standalone: true,
   imports: [PixelLegendComponent],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (hasPixelData()) {
     <div class="flex gap-4 items-center">

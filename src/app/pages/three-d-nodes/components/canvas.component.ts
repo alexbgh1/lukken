@@ -46,7 +46,7 @@ import {
       }
     `,
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
 })
 export class Three3DCanvasComponent implements AfterViewInit, OnDestroy {

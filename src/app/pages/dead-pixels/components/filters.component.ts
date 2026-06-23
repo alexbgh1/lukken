@@ -16,7 +16,7 @@ import { FiltersDataService } from '../services/filters-data.service';
 @Component({
   imports: [ReactiveFormsModule, UploadIconComponent],
   selector: 'dead-pixels-filters',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './filters.component.html',
 })
 export class DeadPixelsFiltersComponent {

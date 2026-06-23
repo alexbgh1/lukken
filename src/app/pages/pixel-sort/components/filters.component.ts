@@ -13,7 +13,7 @@ import {
   selector: 'pixel-sort-filters',
   imports: [FormsModule],
   templateUrl: './filters.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
 })
 export class PixelSortFiltersComponent {

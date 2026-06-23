@@ -7,7 +7,7 @@ import { ColorPaletteComponent } from '@shared/components/color-palette/color-pa
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, NavComponent],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './app.component.html',
 })
 export class AppComponent {

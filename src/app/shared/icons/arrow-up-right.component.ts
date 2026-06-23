@@ -4,7 +4,7 @@ import { cn } from '../utils/cn';
 @Component({
   selector: 'arrow-up-right-icon',
   standalone: true,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <svg
       [class]="mergedClassList()"

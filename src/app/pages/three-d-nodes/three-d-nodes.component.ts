@@ -10,7 +10,7 @@ import { Three3DCanvasComponent } from './components/canvas.component';
     Three3DCanvasComponent,
   ],
   selector: 'app-three-d-nodes',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './three-d-nodes.component.html',
 })
 export class ThreeDNodesComponent {}

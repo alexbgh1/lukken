@@ -3,7 +3,7 @@ import { cn } from '../../utils/cn';
 
 @Component({
   selector: 'eye-off-icon',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <svg
       [class]="mergedClassList()"

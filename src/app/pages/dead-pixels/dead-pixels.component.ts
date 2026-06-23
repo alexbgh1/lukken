@@ -20,7 +20,7 @@ import { PixelType } from '@interfaces/dead-pixels.interface';
     DeadPixelsLegendWrapperComponent,
     PixelLegendComponent,
   ],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dead-pixels.component.html',
 })
 export class DeadPixelsComponent {

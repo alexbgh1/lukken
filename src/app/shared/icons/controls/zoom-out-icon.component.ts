@@ -3,7 +3,7 @@ import { cn } from '../../utils/cn';
 
 @Component({
   selector: 'zoom-out-icon',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <svg
       [class]="mergedClassList()"

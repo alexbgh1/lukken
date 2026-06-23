@@ -6,7 +6,7 @@ import { PixelSortCanvasService } from '../services/canvas.service';
   selector: 'pixel-sort-canvas',
   imports: [],
   templateUrl: './canvas.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
 })
 export class PixelSortCanvasComponent {

@@ -25,7 +25,7 @@ import { UploadIconComponent } from '@shared/icons';
     UploadIconComponent,
   ],
   selector: 'three-d-filters',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './filters.component.html',
 })
 export class Three3dFiltersComponent {

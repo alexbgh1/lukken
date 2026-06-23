@@ -16,7 +16,7 @@ interface Tool {
 @Component({
   imports: [RouterLink, ArrowUpRightIconComponent],
   selector: 'app-landing',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './landing.component.html',
 })
 export class LandingComponent implements OnInit {

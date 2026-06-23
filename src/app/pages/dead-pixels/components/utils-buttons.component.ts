@@ -18,7 +18,7 @@ import { DeadPixelsCanvasService } from '../services/canvas.service';
     ZoomInIconComponent
 ],
   templateUrl: './utils-buttons.component.html',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [],
 })
 export class DeadPixelsUtilsButtonsComponent {

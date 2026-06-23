@@ -36,7 +36,7 @@ import { PIXEL_DETECTION, SENSITIVITY } from '../constants/canvas.constants';
       }
     </div>
   `,
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [
     `
       canvas {

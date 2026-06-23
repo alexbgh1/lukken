@@ -10,7 +10,7 @@ import { PixelSortCanvasComponent } from './components/canvas.component';
     PixelSortCanvasComponent,
   ],
   selector: 'pixel-sort',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pixel-sort.component.html',
 })
 export class PixelSortComponent {}

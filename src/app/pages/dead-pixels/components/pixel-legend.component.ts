@@ -8,7 +8,7 @@ import {
   selector: 'pixel-legend',
   standalone: true,
   imports: [],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="flex items-center gap-2">
       @switch (pixelType()) {

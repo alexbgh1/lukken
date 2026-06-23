@@ -4,7 +4,7 @@ import { cn } from '@shared/utils/cn';
 @Component({
   imports: [],
   selector: 'main-layout',
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './main-layout.component.html',
 })
 export class MainLayoutComponent {

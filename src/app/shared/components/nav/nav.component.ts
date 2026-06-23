@@ -6,7 +6,7 @@ import { NAV_LINKS } from '@shared/constants/nav-links.constants';
 @Component({
   selector: 'app-nav',
   imports: [RouterLink, RouterLinkActive],
-  changeDetection: ChangeDetectionStrategy.Eager,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './nav.component.html',
 })
 export class NavComponent {
