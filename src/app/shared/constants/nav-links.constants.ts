@@ -5,9 +5,9 @@ const NAV_LINKS = [
     href: '/',
   },
   {
-    id: 'dead-pixels',
-    name: 'Dead Pixels',
-    href: '/dead-pixels',
+    id: 'layouts',
+    name: 'Layouts',
+    href: '/layouts',
   },
   {
     id: 'pixel-sort',
@@ -19,13 +19,16 @@ const NAV_LINKS = [
     name: '3D Nodes',
     href: '/3d-nodes',
   },
+  {
+    id: 'glass',
+    name: 'Fractal Glass',
+    href: '/glass',
+  },
+  {
+    id: 'halftone',
+    name: 'Halftone',
+    href: '/halftone',
+  },
 ];
 
-const NAV_LINKS_OBJECTS = {
-  home: NAV_LINKS[0],
-  deadPixels: NAV_LINKS[1],
-  pixelSort: NAV_LINKS[2],
-  threeDNodes: NAV_LINKS[3],
-};
-
-export { NAV_LINKS, NAV_LINKS_OBJECTS };
+export { NAV_LINKS };

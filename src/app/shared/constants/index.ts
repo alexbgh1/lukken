@@ -1,1 +1,2 @@
-export { NAV_LINKS, NAV_LINKS_OBJECTS } from './nav-links.constants';
+export { NAV_LINKS } from './nav-links.constants';
+export { IMAGE_UPLOAD } from './image-upload.constants';

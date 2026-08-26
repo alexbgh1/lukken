@@ -1,0 +1,7 @@
+# Lukken
+# https://alexbgh1.github.io/lukken/
+
+User-agent: *
+Allow: /
+
+Sitemap: https://alexbgh1.github.io/lukken/sitemap.xml

@@ -1,0 +1,374 @@
+<div class="flex flex-col gap-5">
+  <image-upload
+    inputId="halftoneImageInput"
+    [previewUrl]="canvasService.imageSlot.url()"
+    [fileName]="canvasService.imageSlot.name()"
+    [maxSize]="FILE_CONFIG.MAX_SIZE"
+    [error]="canvasService.loadError()"
+    (fileSelected)="onImageSelected($event)"
+    (cleared)="onImageCleared()"
+  />
+
+  <div class="border-t border-border"></div>
+
+  <!-- Mode -->
+  <div class="space-y-2">
+    <span class="block text-xs font-medium text-text-secondary"> Process </span>
+    <div class="grid grid-cols-2 gap-2">
+      <button
+        type="button"
+        (click)="setMode('mono')"
+        class="px-3 py-1.5 text-xs rounded-md border transition-colors cursor-pointer font-medium"
+        [class]="
+          isMode('mono')
+            ? 'bg-accent-primary text-bg-primary border-accent-primary'
+            : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+        "
+      >
+        Mono
+      </button>
+      <button
+        type="button"
+        (click)="setMode('cmyk')"
+        class="px-3 py-1.5 text-xs rounded-md border transition-colors cursor-pointer font-medium"
+        [class]="
+          isMode('cmyk')
+            ? 'bg-accent-primary text-bg-primary border-accent-primary'
+            : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+        "
+      >
+        CMYK
+      </button>
+    </div>
+    <p class="text-2xs text-text-muted/70 leading-snug">
+      @if (isMode("mono")) {
+        One plate, one ink.
+      } @else {
+        Four plates on the traditional angles, overprinted.
+      }
+    </p>
+  </div>
+
+  <div class="border-t border-border"></div>
+
+  <!-- Screen -->
+  <div class="space-y-3">
+    <span class="block text-xs font-medium text-text-secondary"> Screen </span>
+
+    <!-- Cell -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-center">
+        <label for="halftoneCell" class="text-xs text-text-muted font-medium">
+          Cell size
+        </label>
+        <span
+          class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+          [class.text-accent-primary]="isModified('cell')"
+          [class.text-text-secondary]="!isModified('cell')"
+        >
+          {{ filters.cell }} px
+        </span>
+      </div>
+      <input
+        id="halftoneCell"
+        type="range"
+        step="1"
+        [min]="CONFIG.CELL.MIN"
+        [max]="CONFIG.CELL.MAX"
+        [value]="filters.cell"
+        (input)="setValue('cell', $any($event.target).value)"
+        (dblclick)="resetValue('cell')"
+        class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        [class.slider-modified]="isModified('cell')"
+        style="background: var(--color-bg-primary)"
+      />
+    </div>
+
+    <!-- Angle, mono only. CMYK drives its four plates independently. -->
+    @if (isMode("mono")) {
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <label
+            for="halftoneAngle"
+            class="text-xs text-text-muted font-medium"
+          >
+            Angle
+          </label>
+          <span
+            class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+            [class.text-accent-primary]="isModified('angle')"
+            [class.text-text-secondary]="!isModified('angle')"
+          >
+            {{ filters.angle }}&deg;
+          </span>
+        </div>
+        <input
+          id="halftoneAngle"
+          type="range"
+          step="1"
+          [min]="CONFIG.ANGLE.MIN"
+          [max]="CONFIG.ANGLE.MAX"
+          [value]="filters.angle"
+          (input)="setValue('angle', $any($event.target).value)"
+          (dblclick)="resetValue('angle')"
+          class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+          [class.slider-modified]="isModified('angle')"
+          style="background: var(--color-bg-primary)"
+        />
+      </div>
+    }
+
+    <!-- Dot shape -->
+    <div class="space-y-2">
+      <span class="text-xs text-text-muted font-medium"> Dot shape </span>
+      <div class="grid grid-cols-3 gap-2">
+        @for (item of SHAPES; track item.value) {
+          <button
+            type="button"
+            (click)="setShape(item.value)"
+            class="px-2 py-1.5 text-2xs rounded-md border transition-colors cursor-pointer font-medium"
+            [class]="
+              isShape(item.value)
+                ? 'bg-accent-primary text-bg-primary border-accent-primary'
+                : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+            "
+          >
+            {{ item.label }}
+          </button>
+        }
+      </div>
+    </div>
+
+    <!-- Dot scale -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-center">
+        <label
+          for="halftoneDotScale"
+          class="text-xs text-text-muted font-medium"
+        >
+          Dot scale
+        </label>
+        <span
+          class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+          [class.text-accent-primary]="isModified('dotScale')"
+          [class.text-text-secondary]="!isModified('dotScale')"
+        >
+          {{ filters.dotScale }}%
+        </span>
+      </div>
+      <input
+        id="halftoneDotScale"
+        type="range"
+        step="1"
+        [min]="CONFIG.DOT_SCALE.MIN"
+        [max]="CONFIG.DOT_SCALE.MAX"
+        [value]="filters.dotScale"
+        (input)="setValue('dotScale', $any($event.target).value)"
+        (dblclick)="resetValue('dotScale')"
+        class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        [class.slider-modified]="isModified('dotScale')"
+        style="background: var(--color-bg-primary)"
+      />
+      <p class="text-2xs text-text-muted/70 leading-snug">
+        100% is area correct. Above it the dots close the gaps at the cell
+        corners.
+      </p>
+    </div>
+
+    <!-- Response -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-center">
+        <label
+          for="halftoneResponse"
+          class="text-xs text-text-muted font-medium"
+        >
+          Response
+        </label>
+        <span
+          class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+          [class.text-accent-primary]="isModified('response')"
+          [class.text-text-secondary]="!isModified('response')"
+        >
+          {{ filters.response }}
+        </span>
+      </div>
+      <input
+        id="halftoneResponse"
+        type="range"
+        [step]="CONFIG.RESPONSE.STEP"
+        [min]="CONFIG.RESPONSE.MIN"
+        [max]="CONFIG.RESPONSE.MAX"
+        [value]="filters.response"
+        (input)="setValue('response', $any($event.target).value)"
+        (dblclick)="resetValue('response')"
+        class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        [class.slider-modified]="isModified('response')"
+        style="background: var(--color-bg-primary)"
+      />
+    </div>
+
+    <!-- Negative -->
+    <label
+      class="flex items-center gap-2 cursor-pointer"
+      (click)="toggleNegative()"
+    >
+      <div
+        class="w-4 h-4 rounded border transition-colors flex items-center justify-center"
+        [class.bg-accent-primary]="filters.negative"
+        [class.border-accent-primary]="filters.negative"
+        [class.border-border]="!filters.negative"
+      >
+        @if (filters.negative) {
+          <svg
+            class="w-3 h-3"
+            style="color: oklch(10% 0 0)"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+          >
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        }
+      </div>
+      <span class="text-xs text-text-secondary font-medium"> Negative </span>
+    </label>
+  </div>
+
+  <!-- Process angles, CMYK only -->
+  @if (isMode("cmyk")) {
+    <div class="border-t border-border"></div>
+
+    <div class="space-y-3">
+      <div class="flex items-center justify-between">
+        <span class="text-xs font-medium text-text-secondary">
+          Plate angles
+        </span>
+        @if (!filtersService.hasProcessAngles()) {
+          <button
+            type="button"
+            (click)="resetProcessAngles()"
+            class="text-2xs px-2 py-0.5 rounded border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary transition-colors cursor-pointer"
+          >
+            Rosette
+          </button>
+        }
+      </div>
+
+      @for (plate of plates; track plate.key) {
+        <div class="space-y-2">
+          <div class="flex justify-between items-center">
+            <label class="text-xs text-text-muted font-medium">
+              {{ plate.label }}
+            </label>
+            <span
+              class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+              [class.text-accent-primary]="isModified(plate.key)"
+              [class.text-text-secondary]="!isModified(plate.key)"
+            >
+              {{ plate.value }}&deg;
+            </span>
+          </div>
+          <input
+            type="range"
+            step="1"
+            [min]="CONFIG.ANGLE.MIN"
+            [max]="CONFIG.ANGLE.MAX"
+            [value]="plate.value"
+            (input)="setValue(plate.key, $any($event.target).value)"
+            (dblclick)="resetValue(plate.key)"
+            class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+            [class.slider-modified]="isModified(plate.key)"
+            style="background: var(--color-bg-primary)"
+          />
+        </div>
+      }
+
+      <p class="text-2xs text-text-muted/70 leading-snug">
+        The 30 degree gaps between cyan, magenta and black are what make the
+        rosette. Collapse them and you get moire instead.
+      </p>
+    </div>
+  }
+
+  <div class="border-t border-border"></div>
+
+  <!-- Ink and paper -->
+  <div class="space-y-3">
+    <span class="block text-xs font-medium text-text-secondary"> Stock </span>
+
+    @if (isMode("mono")) {
+      <div class="grid grid-cols-3 gap-2">
+        @for (preset of PRESETS; track preset.label) {
+          <button
+            type="button"
+            (click)="applyPreset(preset.ink, preset.paper)"
+            class="flex flex-col items-center gap-1 p-1 rounded-lg border transition-colors cursor-pointer"
+            [class]="
+              isPreset(preset.ink, preset.paper)
+                ? 'border-accent-primary bg-accent-primary/5'
+                : 'border-border hover:bg-hover'
+            "
+          >
+            <span
+              class="w-full aspect-square rounded border border-border/50 flex items-center justify-center"
+              [style.background]="preset.paper"
+            >
+              <span
+                class="w-2.5 h-2.5 rounded-full"
+                [style.background]="preset.ink"
+              ></span>
+            </span>
+            <span class="text-3xs text-text-secondary">{{ preset.label }}</span>
+          </button>
+        }
+      </div>
+
+      <!-- Ink -->
+      <div class="flex items-center gap-3">
+        <label
+          class="relative w-6 h-6 rounded cursor-pointer overflow-hidden flex-shrink-0 border border-border"
+        >
+          <span
+            class="absolute inset-0"
+            [style.background]="filters.inkColor"
+          ></span>
+          <input
+            type="color"
+            [value]="filters.inkColor"
+            (input)="setInk($any($event.target).value)"
+            class="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+          />
+        </label>
+        <span class="text-xs text-text-muted flex-1 font-medium"> Ink </span>
+        <button
+          type="button"
+          (click)="swapInkAndPaper()"
+          class="text-2xs px-2 py-0.5 rounded border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary transition-colors cursor-pointer"
+          title="Swap ink and paper"
+        >
+          Swap
+        </button>
+      </div>
+    }
+
+    <!-- Paper -->
+    <div class="flex items-center gap-3">
+      <label
+        class="relative w-6 h-6 rounded cursor-pointer overflow-hidden flex-shrink-0 border border-border"
+      >
+        <span
+          class="absolute inset-0"
+          [style.background]="filters.paperColor"
+        ></span>
+        <input
+          type="color"
+          [value]="filters.paperColor"
+          (input)="setPaper($any($event.target).value)"
+          class="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+        />
+      </label>
+      <span class="text-xs text-text-muted flex-1 font-medium"> Paper </span>
+    </div>
+  </div>
+</div>

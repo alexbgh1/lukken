@@ -1,0 +1,100 @@
+<main-layout className="max-w-none mx-0 p-0 pt-14">
+  <tool-shell>
+    <glass-filters panel></glass-filters>
+
+    <!-- Header -->
+    <div class="px-6 pt-5 pb-3">
+      <div class="flex items-center gap-3 mb-1">
+        <h1 class="text-xl font-semibold tracking-wide">Fractal Glass</h1>
+        <processing-indicator
+          [active]="canvasService.isProcessing() || canvasService.isExporting()"
+          label="Refracting"
+        />
+      </div>
+      <p class="text-sm text-text-secondary max-w-xl font-normal">
+        Refracts a photo through a procedural height map - the glass distortion
+        effect, with a movable region so only part of the image is affected.
+      </p>
+    </div>
+
+    <!-- Toolbar -->
+    @if (canvasService.hasImage()) {
+      <div class="flex items-center gap-2 px-6 pb-3">
+        <button
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary disabled:opacity-40 disabled:cursor-not-allowed"
+          (click)="downloadCanvas()"
+          [disabled]="canvasService.isExporting()"
+          [title]="'Re-runs the effect at ' + exportLabel()"
+        >
+          <download-icon className="w-3.5 h-3.5" />
+          @if (canvasService.isExporting()) {
+            Exporting...
+          } @else {
+            Download
+          }
+        </button>
+        @if (isMasked()) {
+          <!-- Hides the mask frame so the result can be judged clean.
+                 Holding space does the same while held. -->
+          <button
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary"
+            (click)="toggleMaskOverlay()"
+            [title]="
+              showMaskOverlay()
+                ? 'Hide mask frame (or hold Space)'
+                : 'Show mask frame'
+            "
+          >
+            @if (showMaskOverlay()) {
+              <eye-off-icon className="w-3.5 h-3.5" />
+              Hide frame
+            } @else {
+              <eye-icon className="w-3.5 h-3.5" />
+              Show frame
+            }
+          </button>
+        }
+
+        <!-- Zoom is display-only; the exported file is unaffected -->
+        <div class="ml-1">
+          <zoom-control
+            [zoom]="filtersService.zoom()"
+            (zoomChange)="setZoom($event)"
+          />
+        </div>
+
+        @if (canvasService.isProcessing()) {
+          <span class="text-xs text-text-muted font-normal">
+            Processing...
+          </span>
+        } @else if (canvasService.lastRenderMs() !== null) {
+          <span class="text-xs text-text-muted/60 tabular-nums">
+            {{ sizeLabel() }}, shown at {{ zoomLabel() }},
+            {{ canvasService.lastRenderMs() }} ms
+          </span>
+        }
+      </div>
+    }
+
+    <!-- Canvas -->
+    <div class="flex-1 min-h-0 px-6 pb-4">
+      <div
+        class="rounded-lg overflow-hidden border border-border h-full"
+        style="background: var(--color-bg-canvas)"
+      >
+        @if (canvasService.hasImage()) {
+          <glass-canvas></glass-canvas>
+        } @else {
+          <div
+            class="flex flex-col items-center justify-center gap-2 py-24 text-center"
+          >
+            <p class="text-sm text-text-muted">No image loaded</p>
+            <p class="text-xs text-text-muted/60">
+              Upload one from the Controls panel to start.
+            </p>
+          </div>
+        }
+      </div>
+    </div>
+  </tool-shell>
+</main-layout>

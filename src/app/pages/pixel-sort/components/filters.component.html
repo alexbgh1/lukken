@@ -1,147 +1,465 @@
-<!-- Controls Panel -->
-<button
-  (click)="toggleControls()"
-  class="z-20 px-3 py-2 bg-bg-secondary hover:bg-hover rounded border border-border text-text-primary transition-colors"
->
-  {{ showControls ? "Hide" : "Show" }} Controls
-</button>
+<div class="flex flex-col gap-5">
+  <image-upload
+    inputId="fileInput"
+    [previewUrl]="canvasService.imageSlot.url()"
+    [fileName]="canvasService.imageSlot.name()"
+    [error]="canvasService.loadError()"
+    (fileSelected)="onImageSelected($event)"
+    (cleared)="onImageCleared()"
+  />
 
-<div
-  class="bg-bg-secondary bg-opacity-90 p-4 rounded-lg transition-all duration-300 shadow-lg border border-border max-w-xs"
-  [class.hidden]="!showControls"
->
-  <!-- File Upload Section -->
-  <div class="mb-4 p-3 bg-bg-tertiary rounded border border-border">
-    <label for="fileInput" class="font-bold block mb-2 text-text-primary"
-      >Select an image:</label
-    >
-    <div class="flex flex-col gap-2">
-      <input
-        #fileInput
-        type="file"
-        class="text-sm"
-        accept="image/*"
-        (change)="onFileUpload($event)"
-      />
-      <div class="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="stackOutput"
-          [checked]="filtersService.filters().stackOutput"
-          (change)="toggleStackOutput()"
-          class="text-accent-primary"
-        />
-        <label for="stackOutput" class="text-text-secondary text-sm"
-          >Stack Output</label
-        >
-      </div>
-      <button
-        (click)="resetImage()"
-        class="px-3 py-2 bg-bg-secondary hover:bg-hover rounded border border-border text-text-primary transition-colors text-sm"
-        [disabled]="canvasService.isProcessing()"
+  <!-- Separator -->
+  <div class="border-t border-border"></div>
+
+  <!-- Threshold -->
+  <div class="space-y-2">
+    <div class="flex justify-between items-center">
+      <label
+        for="threshold"
+        class="text-xs text-text-muted font-medium"
       >
-        Reset
-      </button>
-    </div>
-  </div>
-
-  <!-- Threshold Section -->
-  <div class="mb-4 p-3 bg-bg-tertiary rounded border border-border">
-    <label class="font-bold block mb-2 text-text-primary">Threshold:</label>
-    <div class="flex flex-col gap-2">
-      <canvas
-        #histogramCanvas
-        [width]="CONFIG.CANVAS.HISTOGRAM_WIDTH"
-        [height]="CONFIG.CANVAS.HISTOGRAM_HEIGHT"
-        class="mb-2"
-      ></canvas>
-
-      <input
-        type="range"
-        [min]="CONFIG.THRESHOLD.MIN"
-        [max]="CONFIG.THRESHOLD.MAX"
-        [value]="filtersService.filters().threshold"
-        (input)="onThresholdChange(+$any($event.target).value)"
-        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
-      />
-
-      <div class="text-center text-sm text-text-secondary mb-2">
+        Threshold
+      </label>
+      <span
+        class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+        [class.text-accent-primary]="
+          filtersService.filters().threshold !== CONFIG.THRESHOLD.DEFAULT
+        "
+        [class.text-text-secondary]="
+          filtersService.filters().threshold === CONFIG.THRESHOLD.DEFAULT
+        "
+      >
         {{ filtersService.filters().threshold }}
-      </div>
-
-      <select
-        [value]="filtersService.filters().mode"
-        (change)="onModeChange($any($event.target).value)"
-        class="mb-2 p-2 rounded bg-bg-secondary border border-border text-text-primary text-sm"
-      >
-        @for (mode of MODES; track mode.value) {
-        <option [value]="mode.value">{{ mode.label }}</option>
-        }
-      </select>
-
-      <div class="flex items-center gap-2">
-        <input
-          type="checkbox"
-          id="invert"
-          [checked]="filtersService.filters().invert"
-          (change)="toggleInvert()"
-          class="text-accent-primary"
-        />
-        <label for="invert" class="text-text-secondary text-sm">Invert</label>
-      </div>
+      </span>
     </div>
+
+    <canvas
+      #histogramCanvas
+      [width]="CONFIG.CANVAS.HISTOGRAM_WIDTH"
+      [height]="CONFIG.CANVAS.HISTOGRAM_HEIGHT"
+      class="w-full rounded border border-border"
+      style="background: var(--color-bg-primary); height: 60px"
+    ></canvas>
+
+    <input
+      id="threshold"
+      type="range"
+      [min]="CONFIG.THRESHOLD.MIN"
+      [max]="CONFIG.THRESHOLD.MAX"
+      [value]="filtersService.filters().threshold"
+      (input)="onThresholdChange(+$any($event.target).value)"
+      (dblclick)="resetThreshold()"
+      class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+      [class.slider-modified]="
+        filtersService.filters().threshold !== CONFIG.THRESHOLD.DEFAULT
+      "
+      style="background: var(--color-bg-primary)"
+    />
+
+    <!-- Mode -->
+    <select
+      [value]="filtersService.filters().mode"
+      (change)="onModeChange($any($event.target).value)"
+      class="w-full px-2 py-1.5 text-xs rounded-md border bg-transparent text-text-secondary border-border transition-colors focus:outline-none font-medium"
+    >
+      @for (mode of MODES; track mode.value) {
+        <option [value]="mode.value" class="bg-bg-primary">
+          {{ mode.label }}
+        </option>
+      }
+    </select>
+
+    <!-- Invert -->
+    <label
+      class="flex items-center gap-2 cursor-pointer"
+      (click)="toggleInvert()"
+    >
+      <div
+        class="w-4 h-4 rounded border transition-colors flex items-center justify-center"
+        [class.bg-accent-primary]="filtersService.filters().invert"
+        [class.border-accent-primary]="filtersService.filters().invert"
+        [class.border-border]="!filtersService.filters().invert"
+      >
+        @if (filtersService.filters().invert) {
+          <svg
+            class="w-3 h-3"
+            style="color: oklch(10% 0 0)"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+          >
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        }
+      </div>
+      <span
+        class="text-xs text-text-secondary font-medium"
+      >
+        Invert
+      </span>
+    </label>
   </div>
 
-  <!-- Angle Section -->
-  <div class="mb-4 p-3 bg-bg-tertiary rounded border border-border">
-    <label class="font-bold block mb-2 text-text-primary">Angle:</label>
-    <div class="flex flex-col gap-2">
+  <!-- Circular Sort toggle -->
+  <label
+    class="flex items-center gap-2 cursor-pointer"
+    (click)="toggleCircularSort()"
+  >
+    <div
+      class="w-4 h-4 rounded border transition-colors flex items-center justify-center"
+      [class.bg-accent-primary]="filtersService.filters().circularSort"
+      [class.border-accent-primary]="filtersService.filters().circularSort"
+      [class.border-border]="!filtersService.filters().circularSort"
+    >
+      @if (filtersService.filters().circularSort) {
+        <svg
+          class="w-3 h-3"
+          style="color: oklch(10% 0 0)"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3"
+        >
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      }
+    </div>
+    <span
+      class="text-xs text-text-secondary font-medium"
+    >
+      Circular Sort
+    </span>
+  </label>
+
+  <!-- Angle (hidden in circular mode - angle is irrelevant for ring sort) -->
+  @if (!filtersService.filters().circularSort) {
+    <div class="space-y-2">
+      <div class="flex justify-between items-center">
+        <label
+          for="angle"
+          class="text-xs text-text-muted font-medium"
+        >
+          Angle
+        </label>
+        <span
+          class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+          [class.text-accent-primary]="
+            filtersService.filters().angle !== CONFIG.ANGLE.DEFAULT
+          "
+          [class.text-text-secondary]="
+            filtersService.filters().angle === CONFIG.ANGLE.DEFAULT
+          "
+        >
+          {{ filtersService.filters().angle }}°
+        </span>
+      </div>
+
       <canvas
         #angleCanvas
         [width]="CONFIG.CANVAS.ANGLE_CIRCLE_SIZE"
         [height]="CONFIG.CANVAS.ANGLE_CIRCLE_SIZE"
-        class="mx-auto mb-2"
+        class="w-full rounded border border-border mx-auto"
+        style="
+          background: var(--color-bg-primary);
+          max-width: 120px;
+          height: 120px;
+        "
       ></canvas>
 
       <input
+        id="angle"
         type="range"
         [min]="CONFIG.ANGLE.MIN"
         [max]="CONFIG.ANGLE.MAX"
         [value]="filtersService.filters().angle"
         (input)="onAngleChange(+$any($event.target).value)"
-        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
+        (dblclick)="resetAngle()"
+        class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        [class.slider-modified]="
+          filtersService.filters().angle !== CONFIG.ANGLE.DEFAULT
+        "
+        style="background: var(--color-bg-primary)"
       />
 
-      <div class="text-center text-sm text-text-secondary mb-2">
-        {{ filtersService.filters().angle }}°
-      </div>
-
-      <div class="grid grid-cols-3 gap-1">
-        @for (angle of CONFIG.ANGLE.PRESETS.slice(0, -1); track angle) {
-        <button
-          (click)="setAngle(angle)"
-          class="px-2 py-1 bg-bg-secondary hover:bg-hover rounded text-xs border border-border text-text-primary transition-colors"
-          [disabled]="canvasService.isProcessing()"
-          [class.bg-accent-primary]="filtersService.filters().angle === angle"
-          [class.text-bg-primary]="filtersService.filters().angle === angle"
-        >
-          {{ angle }}°
-        </button>
+      <div class="grid grid-cols-4 gap-1">
+        @for (angle of CONFIG.ANGLE.PRESETS; track angle) {
+          <button
+            type="button"
+            class="px-1 py-1 text-xs font-medium rounded transition-colors duration-200 border"
+            [class.bg-accent-primary]="filtersService.filters().angle === angle"
+            [class.text-bg-primary]="filtersService.filters().angle === angle"
+            [class.border-accent-primary]="
+              filtersService.filters().angle === angle
+            "
+            [class.bg-transparent]="filtersService.filters().angle !== angle"
+            [class.text-text-secondary]="filtersService.filters().angle !== angle"
+            [class.border-border]="filtersService.filters().angle !== angle"
+            [class.hover:bg-hover]="filtersService.filters().angle !== angle"
+            (click)="setAngle(angle)"
+          >
+            {{ angle }}°
+          </button>
         }
       </div>
     </div>
+  } @else {
+    <!-- Pivot controls (circular mode) -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-center">
+        <span
+          class="text-xs text-text-muted font-medium"
+        >
+          Pivot
+        </span>
+        <button
+          type="button"
+          class="text-xs px-2 py-1 rounded transition-colors duration-200 border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary font-medium"
+          (click)="resetPivot()"
+        >
+          Reset to center
+        </button>
+      </div>
+      <p
+        class="text-xs text-text-muted font-normal"
+      >
+        Drag the marker on the image to move the pivot
+      </p>
+    </div>
+  }
+
+  <!-- Separator -->
+  <div class="border-t border-border"></div>
+
+  <!-- Stack Output -->
+  <label
+    class="flex items-center gap-2 cursor-pointer"
+    (click)="toggleStackOutput()"
+  >
+    <div
+      class="w-4 h-4 rounded border transition-colors flex items-center justify-center"
+      [class.bg-accent-primary]="filtersService.filters().stackOutput"
+      [class.border-accent-primary]="filtersService.filters().stackOutput"
+      [class.border-border]="!filtersService.filters().stackOutput"
+    >
+      @if (filtersService.filters().stackOutput) {
+        <svg
+          class="w-3 h-3"
+          style="color: oklch(10% 0 0)"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="3"
+        >
+          <path d="M20 6L9 17l-5-5" />
+        </svg>
+      }
+    </div>
+    <span
+      class="text-xs text-text-secondary font-medium"
+    >
+      Stack Output
+    </span>
+  </label>
+
+  <!-- Separator -->
+  <div class="border-t border-border"></div>
+
+  <!-- Mask Section -->
+  <div class="space-y-3">
+    <div class="flex justify-between items-center">
+      <span
+        class="text-xs text-text-muted font-medium"
+      >
+        Mask
+      </span>
+      @if (maskService.hasMask()) {
+        <button
+          type="button"
+          class="text-xs px-2 py-1 rounded transition-colors duration-200 border font-medium"
+          [class.bg-accent-primary]="maskService.isMaskEnabled()"
+          [class.text-bg-primary]="maskService.isMaskEnabled()"
+          [class.border-accent-primary]="maskService.isMaskEnabled()"
+          [class.bg-transparent]="!maskService.isMaskEnabled()"
+          [class.text-text-secondary]="!maskService.isMaskEnabled()"
+          [class.border-border]="!maskService.isMaskEnabled()"
+          (click)="toggleMask()"
+        >
+          {{ maskService.isMaskEnabled() ? "On" : "Off" }}
+        </button>
+      }
+    </div>
+
+    <!-- Brush shape toggle: Brush (solid circle) vs Ring (annulus) -->
+    <div class="grid grid-cols-2 gap-1">
+      <button
+        type="button"
+        class="px-2 py-1.5 text-xs font-medium rounded transition-colors duration-200 border"
+        [class.bg-accent-primary]="maskService.brushSettings().shape === 'circle'"
+        [class.text-bg-primary]="maskService.brushSettings().shape === 'circle'"
+        [class.border-accent-primary]="maskService.brushSettings().shape === 'circle'"
+        [class.bg-transparent]="maskService.brushSettings().shape !== 'circle'"
+        [class.text-text-secondary]="maskService.brushSettings().shape !== 'circle'"
+        [class.border-border]="maskService.brushSettings().shape !== 'circle'"
+        [class.hover:bg-hover]="maskService.brushSettings().shape !== 'circle'"
+        (click)="setBrushShape('circle')"
+      >
+        Brush
+      </button>
+      <button
+        type="button"
+        class="px-2 py-1.5 text-xs font-medium rounded transition-colors duration-200 border"
+        [class.bg-accent-primary]="maskService.brushSettings().shape === 'ring'"
+        [class.text-bg-primary]="maskService.brushSettings().shape === 'ring'"
+        [class.border-accent-primary]="maskService.brushSettings().shape === 'ring'"
+        [class.bg-transparent]="maskService.brushSettings().shape !== 'ring'"
+        [class.text-text-secondary]="maskService.brushSettings().shape !== 'ring'"
+        [class.border-border]="maskService.brushSettings().shape !== 'ring'"
+        [class.hover:bg-hover]="maskService.brushSettings().shape !== 'ring'"
+        (click)="setBrushShape('ring')"
+      >
+        Ring
+      </button>
+    </div>
+
+    <!-- Brush Size -->
+    <div class="space-y-1">
+      <div class="flex justify-between items-center">
+        <label
+          class="text-xs text-text-muted font-medium"
+        >
+          Brush
+        </label>
+        <span
+          class="text-xs tabular-nums text-text-secondary font-normal"
+        >
+          {{ maskService.brushSettings().size }}
+        </span>
+      </div>
+      <input
+        type="range"
+        min="5"
+        max="200"
+        [value]="maskService.brushSettings().size"
+        (input)="onBrushSizeChange(+$any($event.target).value)"
+        class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        style="background: var(--color-bg-primary)"
+      />
+    </div>
+
+    <!-- Ring Hole (only when shape === 'ring') -->
+    @if (maskService.brushSettings().shape === 'ring') {
+      <div class="space-y-1">
+        <div class="flex justify-between items-center">
+          <label
+            class="text-xs text-text-muted font-medium"
+          >
+            Hole
+          </label>
+          <span
+            class="text-xs tabular-nums text-text-secondary font-normal"
+          >
+            {{ (maskService.brushSettings().hole * 100).toFixed(0) }}%
+          </span>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max="95"
+          step="1"
+          [value]="(maskService.brushSettings().hole * 100).toFixed(0)"
+          (input)="onBrushHoleChange(+$any($event.target).value)"
+          class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+          style="background: var(--color-bg-primary)"
+        />
+      </div>
+    }
+
+    <!-- Overlay Opacity -->
+    <div class="space-y-1">
+      <div class="flex justify-between items-center">
+        <label
+          class="text-xs text-text-muted font-medium"
+        >
+          Opacity
+        </label>
+        <span
+          class="text-xs tabular-nums text-text-secondary font-normal"
+        >
+          {{ (maskService.brushSettings().opacity * 100).toFixed(0) }}%
+        </span>
+      </div>
+      <input
+        type="range"
+        min="0.1"
+        max="1"
+        step="0.05"
+        [value]="maskService.brushSettings().opacity"
+        (input)="onBrushOpacityChange(+$any($event.target).value)"
+        class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        style="background: var(--color-bg-primary)"
+      />
+    </div>
+
+    <!-- Color -->
+    <div class="flex items-center gap-3">
+      <label
+        class="relative w-6 h-6 rounded cursor-pointer overflow-hidden flex-shrink-0 border border-border"
+      >
+        <span
+          class="absolute inset-0"
+          [style.background]="maskService.brushSettings().color"
+        ></span>
+        <input
+          type="color"
+          [value]="maskService.brushSettings().color"
+          (input)="onBrushColorChange($any($event.target).value)"
+          class="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
+        />
+      </label>
+      <button
+        type="button"
+        class="flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary"
+        (click)="clearMask()"
+        [disabled]="!maskService.hasMask()"
+      >
+        Clear Mask
+      </button>
+    </div>
+
+    @if (!canvasService.originalImage()) {
+      <p
+        class="text-xs text-text-muted font-normal"
+      >
+        Load an image to paint a mask
+      </p>
+    } @else if (!maskService.hasMask()) {
+      <p
+        class="text-xs text-text-muted font-normal"
+      >
+        Paint on the image to select areas for sorting
+      </p>
+    } @else if (maskService.hasMask() && !maskService.isMaskEnabled()) {
+      <p
+        class="text-xs text-text-muted font-normal"
+      >
+        Mask exists but is disabled - sort applies to full image
+      </p>
+    }
   </div>
 
-  <!-- Process Button -->
-  <div class="p-3 bg-bg-tertiary rounded border border-border">
-    <button
-      (click)="processImage()"
-      class="w-full px-4 py-3 bg-accent-primary hover:bg-accent-secondary text-bg-primary rounded font-bold transition-colors disabled:opacity-50"
-      [disabled]="
-        canvasService.isProcessing() || !canvasService.originalImage()
-      "
-    >
-      @if (canvasService.isProcessing()) { Processing... } @else { Sort Image }
-    </button>
-  </div>
+  <!-- Sort Image -->
+  <button
+    (click)="processImage()"
+    [disabled]="canvasService.isProcessing() || !canvasService.originalImage()"
+    class="w-full px-4 py-2 text-sm font-medium rounded-lg transition-[color,background-color,border-color,filter,scale] duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:active:scale-100 tracking-wider"
+    style="background: var(--color-accent-primary);
+      color: oklch(10% 0 0)"
+  >
+    @if (canvasService.isProcessing()) {
+      Processing…
+    } @else {
+      Sort Image
+    }
+  </button>
 </div>

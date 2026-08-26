@@ -1,85 +1,187 @@
 <div class="min-h-screen text-text-primary bg-bg-primary">
-  <!-- Hero Section -->
+  <!-- Hero.
+       75vh rather than a full screen: the bento below has to peek, or the
+       whole product stays hidden behind one button. -->
   <section
-    class="relative min-h-screen flex items-center justify-center overflow-hidden"
+    class="relative h-[75vh] min-h-[420px] flex items-center justify-center overflow-hidden"
   >
-    <!-- Animated background grid -->
-    <div class="absolute inset-0 opacity-10">
-      <div class="absolute inset-0 animate-float bg-grid-pattern"></div>
+    <!-- Grid pattern -->
+    <div class="absolute inset-0 opacity-[0.08]">
+      <div class="absolute inset-0 bg-grid-pattern"></div>
     </div>
 
-    <!-- Blobs: accent, accent 2 and background colors  -->
+    <!-- Subtle tonal glow -->
     <div
-      class="absolute w-192 h-192 rounded-full opacity-30 animate-pulse"
+      class="absolute w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full"
       style="
-        top: 10%;
-        left: 25%;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         background: radial-gradient(
           circle,
-          oklch(65% 0.22 310 / 0.4) 0%,
-          transparent 70%
+          oklch(90% 0 0 / 0.06) 0%,
+          transparent 60%
         );
-        animation-duration: 8s;
-      "
-    ></div>
-    <div
-      class="absolute w-120 h-120 rounded-full opacity-25 animate-pulse"
-      style="
-        bottom: 10%;
-        right: 50%;
-        background: radial-gradient(
-          circle,
-          oklch(55% 0.18 190 / 0.3) 0%,
-          transparent 70%
-        );
-        animation-duration: 6s;
-        animation-delay: 2s;
       "
     ></div>
 
+    <!-- Focus rings -->
     <div
-      class="absolute w-64 h-64 rounded-full opacity-20 animate-pulse"
+      class="absolute w-[50vw] h-[50vw] max-w-[500px] max-h-[500px] rounded-full border"
       style="
-        top: 20%;
-        left: 20%;
-        background: radial-gradient(
-          circle,
-          oklch(35% 0.08 275 / 0.5) 0%,
-          transparent 70%
-        );
-        animation-duration: 10s;
-        animation-delay: 4s;
+        border-color: oklch(90% 0 0 / 0.06);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      "
+    ></div>
+    <div
+      class="absolute w-[35vw] h-[35vw] max-w-[350px] max-h-[350px] rounded-full border"
+      style="
+        border-color: oklch(90% 0 0 / 0.04);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       "
     ></div>
 
+    <!-- Content.
+         The hero rises and fades in on mount. The transition names `translate`
+         rather than `transform` because Tailwind v4 emits the standalone
+         property, so a list naming `transform` would never fire. -->
     <div
-      class="relative z-10 text-center max-w-4xl mx-auto px-6 transition-all duration-1000"
+      class="relative z-10 text-center max-w-4xl mx-auto px-6 transition-[opacity,translate] duration-1000 ease-out"
       [class.opacity-100]="isVisible()"
       [class.translate-y-0]="isVisible()"
       [class.opacity-0]="!isVisible()"
       [class.translate-y-8]="!isVisible()"
     >
       <h1
-        class="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-accent-primary from-30% to-100% to-accent-secondary bg-clip-text text-transparent"
+        class="text-6xl md:text-8xl font-bold mb-6 tracking-wider"
+        style="
+          background: linear-gradient(
+            to bottom,
+            oklch(95% 0 0) 0%,
+            oklch(88% 0 0) 100%
+          );
+          background-clip: text;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        "
       >
-        NebulaPix
+        Lukken
       </h1>
 
-      <p class="text-xl md:text-2xl mb-8 max-w-2xl mx-auto text-text-secondary">
+      <p
+        class="text-lg md:text-xl mb-8 max-w-xl mx-auto text-text-secondary font-normal"
+      >
         Visualize your photos in different ways
       </p>
-
-      <div class="flex flex-col sm:flex-row justify-center mb-12">
-        <a
-          [routerLink]="NAV_LINKS_OBJECTS.deadPixels.href"
-          class="gap-2 bg-accent-primary hover:bg-accent-secondary text-primary font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform flex items-center justify-center"
-        >
-          Explore Tools
-          <arrow-up-right-icon
-            className="w-4 h-4 text-white"
-          ></arrow-up-right-icon>
-        </a>
-      </div>
     </div>
+
+    <!-- Bottom fade -->
+    <div
+      class="absolute bottom-0 left-0 right-0 h-24 pointer-events-none"
+      style="
+        background: linear-gradient(
+          to top,
+          oklch(10% 0 0) 0%,
+          transparent 100%
+        );
+      "
+    ></div>
+  </section>
+
+  <!-- The tools, shown rather than described -->
+  <section class="max-w-6xl mx-auto px-6 pb-24">
+    <div class="flex flex-wrap items-end justify-between gap-6 mb-8">
+      <div>
+        <h2 class="text-2xl mb-2 font-semibold tracking-wide">
+          Explore the tools
+        </h2>
+        <p class="text-sm text-text-secondary max-w-lg">
+          Each tool applies a different technique to the source image!
+        </p>
+      </div>
+
+      <!-- The original, shown small. Without it the set is five unrelated
+           images and the idea collapses, so when no untouched photograph has
+           been supplied the figure is left out entirely rather than filled
+           with something that is not the source of the other five. -->
+      @if (sourceImage(); as src) {
+        <figure class="shrink-0">
+          <div
+            class="w-40 rounded-md overflow-hidden border border-border"
+            style="background: var(--color-bg-canvas)"
+          >
+            <img
+              [src]="src"
+              alt="The source photograph"
+              class="block w-full"
+              loading="lazy"
+              decoding="async"
+            />
+          </div>
+          <figcaption class="text-2xs text-text-muted mt-1.5">
+            The original
+          </figcaption>
+        </figure>
+      }
+    </div>
+
+    <!-- Bento. Fixed row height so each cell has a predictable aspect and the
+         imagery can be cropped to it with object-cover. -->
+    <div
+      class="grid grid-cols-1 md:grid-cols-3 gap-5 md:auto-rows-[260px] auto-rows-[220px]"
+    >
+      @for (card of cards; track card.name) {
+        <a
+          [routerLink]="card.href"
+          [class]="card.span"
+          class="group relative block rounded-lg overflow-hidden border border-border transition-colors duration-200 hover:border-accent-primary"
+          style="background: var(--color-bg-secondary)"
+        >
+          @if (imageFor(card.key); as src) {
+            <img
+              [src]="src"
+              [alt]="card.name + ' applied to the source photograph'"
+              class="absolute inset-0 w-full h-full object-cover transition-[scale] duration-500 ease-out group-hover:scale-[1.03]"
+              loading="lazy"
+              decoding="async"
+            />
+          }
+
+          <!-- Scrim, so the label stays readable over any photograph -->
+          <div
+            class="absolute inset-x-0 bottom-0 h-2/3 pointer-events-none"
+            style="
+              background: linear-gradient(
+                to top,
+                oklch(8% 0 0 / 0.92) 0%,
+                oklch(8% 0 0 / 0.55) 45%,
+                transparent 100%
+              );
+            "
+          ></div>
+
+          <div
+            class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4"
+          >
+            <div>
+              <h3 class="text-sm mb-1 font-semibold tracking-wide">
+                {{ card.name }}
+              </h3>
+              <p class="text-xs text-text-secondary leading-relaxed">
+                {{ card.line }}
+              </p>
+            </div>
+            <arrow-up-right-icon
+              className="w-4 h-4 shrink-0 mb-0.5 text-text-muted transition-colors duration-200 group-hover:text-accent-primary"
+            ></arrow-up-right-icon>
+          </div>
+        </a>
+      }
+    </div>
+
   </section>
 </div>

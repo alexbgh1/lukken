@@ -2,8 +2,6 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 import { NavComponent } from '@shared/components/nav/nav.component';
-import { ColorPaletteComponent } from '@shared/components/color-palette/color-palette.component';
-
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet, NavComponent],
@@ -11,5 +9,5 @@ import { ColorPaletteComponent } from '@shared/components/color-palette/color-pa
   templateUrl: './app.component.html',
 })
 export class AppComponent {
-  title = 'photography';
+  title = 'Lukken';
 }

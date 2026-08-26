@@ -11,7 +11,6 @@ export const PIXEL_SORT_CONFIG = {
     PRESETS: [0, 45, 90, 135, 180, 225, 270, 315, 360],
   },
   CANVAS: {
-    MAX_DIMENSION: 2048,
     HISTOGRAM_WIDTH: 256,
     HISTOGRAM_HEIGHT: 150,
     ANGLE_CIRCLE_SIZE: 150,
@@ -47,6 +46,13 @@ export interface PixelSortFilters {
   mode: PixelSortMode;
   invert: boolean;
   stackOutput: boolean;
+  circularSort: boolean;
+  showGrid: boolean;
+}
+
+export interface Pivot {
+  x: number;
+  y: number;
 }
 
 export const DEFAULT_FILTERS: PixelSortFilters = {
@@ -55,11 +61,11 @@ export const DEFAULT_FILTERS: PixelSortFilters = {
   mode: 'luma',
   invert: false,
   stackOutput: false,
+  circularSort: false,
+  showGrid: false,
 };
 
-const ACCENT_PINK = 'rgb(200, 109, 255)';
-const MUTED_GRAY = 'rgb(128, 129, 146)';
 export const COLORS = {
-  ACCENT_PINK,
-  MUTED_GRAY,
+  ACCENT: 'rgb(230, 230, 230)',
+  MUTED: 'rgb(140, 140, 140)',
 } as const;

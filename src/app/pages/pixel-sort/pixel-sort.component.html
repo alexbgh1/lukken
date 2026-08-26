@@ -1,12 +1,100 @@
-<main-layout>
-  <h1 class="text-3xl font-bold mb-2">Pixel Sort</h1>
-  <p class="mb-4 text-text-secondary">
-    Pixel Sort is a technique that rearranges pixels in an image based on their
-    brightness or color values, creating a visually striking effect. Upload an
-    image to see the pixel sorting in action.
-  </p>
-  <div class="flex flex-col items-start gap-4 lg:flex-row">
-    <pixel-sort-filters></pixel-sort-filters>
-    <pixel-sort-canvas></pixel-sort-canvas>
-  </div>
+<main-layout className="max-w-none mx-0 p-0 pt-14">
+  <tool-shell>
+    <pixel-sort-filters panel></pixel-sort-filters>
+
+    <!-- Header -->
+    <div class="px-6 pt-5 pb-3">
+      <div class="flex items-center gap-3 mb-1">
+        <h1 class="text-xl font-semibold tracking-wide">Pixel Sort</h1>
+        <processing-indicator [active]="isProcessing()" label="Sorting" />
+      </div>
+      <p class="text-sm text-text-secondary max-w-xl font-normal">
+        Rearranges pixels based on brightness or color values - creating
+        visually striking glitch-like effects.
+      </p>
+    </div>
+
+    <!-- Toolbar -->
+    @if (canvasImage()) {
+      <div class="flex items-center gap-2 px-6 pb-3">
+        <button
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary"
+          (click)="downloadCanvas()"
+        >
+          <download-icon className="w-3.5 h-3.5" />
+          Download
+        </button>
+        <button
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary"
+          (click)="resetImage()"
+        >
+          Reset
+        </button>
+        <!-- View settings, next to the zoom rather than at the foot of a
+               1200px panel where they sat below the fold. -->
+        <button
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border"
+          [class]="
+            showThirds()
+              ? 'bg-accent-primary text-bg-primary border-accent-primary'
+              : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+          "
+          (click)="toggleThirds()"
+          title="Rule-of-thirds guide"
+        >
+          Thirds
+        </button>
+
+        @if (maskService.hasMask()) {
+          <button
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border"
+            [class]="
+              !maskVisible()
+                ? 'bg-accent-primary text-bg-primary border-accent-primary'
+                : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+            "
+            (click)="toggleMaskOverlay()"
+            [title]="
+              maskVisible()
+                ? 'Hide the mask to see the result underneath'
+                : 'Show the mask again'
+            "
+          >
+            @if (maskVisible()) {
+              <eye-off-icon className="w-3.5 h-3.5" />
+              Hide mask
+            } @else {
+              <eye-icon className="w-3.5 h-3.5" />
+              Show mask
+            }
+          </button>
+        }
+
+        <zoom-control
+          [zoom]="canvasService.zoom()"
+          (zoomChange)="canvasService.setZoom($event)"
+        />
+
+        @if (isProcessing()) {
+          <span class="text-xs text-text-muted font-normal">
+            Processing...
+          </span>
+        } @else if (imageLabel()) {
+          <span class="text-xs text-text-muted/60 tabular-nums">
+            {{ imageLabel() }}, shown at {{ zoomLabel() }}
+          </span>
+        }
+      </div>
+    }
+
+    <!-- Canvas -->
+    <div class="flex-1 min-h-0 px-6 pb-4">
+      <div
+        class="rounded-lg overflow-hidden border border-border h-full"
+        style="background: var(--color-bg-canvas)"
+      >
+        <pixel-sort-canvas></pixel-sort-canvas>
+      </div>
+    </div>
+  </tool-shell>
 </main-layout>

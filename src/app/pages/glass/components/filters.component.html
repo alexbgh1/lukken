@@ -1,0 +1,506 @@
+<div class="flex flex-col gap-5">
+  <image-upload
+    inputId="glassImageInput"
+    [previewUrl]="canvasService.imageSlot.url()"
+    [fileName]="canvasService.imageSlot.name()"
+    [maxSize]="FILE_CONFIG.MAX_SIZE"
+    [error]="canvasService.loadError()"
+    (fileSelected)="onImageSelected($event)"
+    (cleared)="onImageCleared()"
+  />
+
+  <div class="border-t border-border"></div>
+
+  <!-- Texture -->
+  <div class="space-y-2">
+    <span class="block text-xs font-medium text-text-secondary">
+      Texture
+    </span>
+    <div class="grid grid-cols-3 gap-2">
+      @for (tex of TEXTURES; track tex.value) {
+        <button
+          type="button"
+          (click)="selectTexture(tex.value)"
+          class="flex flex-col items-center gap-1 p-1 rounded-lg border transition-colors cursor-pointer"
+          [class]="
+            isTextureActive(tex.value)
+              ? 'border-accent-primary bg-accent-primary/5'
+              : 'border-border hover:bg-hover'
+          "
+        >
+          <img
+            [src]="thumbnails[tex.value]"
+            class="w-full aspect-square rounded object-cover"
+            [alt]="tex.label"
+          />
+          <span
+            class="text-3xs"
+            [class]="
+              isTextureActive(tex.value)
+                ? 'text-text-primary'
+                : 'text-text-secondary'
+            "
+            >{{ tex.label }}</span
+          >
+        </button>
+      }
+    </div>
+
+    <!-- Custom height map -->
+    <label
+      for="glassTextureInput"
+      class="flex items-center justify-center gap-2 w-full py-2 mt-1 border border-dashed border-border rounded-lg cursor-pointer text-2xs text-text-muted hover:border-accent-primary transition-colors"
+    >
+      {{ filtersService.customTextureName() ?? "Load height map (PNG)" }}
+      <input
+        id="glassTextureInput"
+        type="file"
+        accept="image/*"
+        (change)="onTextureFileSelected($event)"
+        class="hidden"
+      />
+    </label>
+    @if (filtersService.customTexture()) {
+      <button
+        type="button"
+        (click)="clearCustomTexture()"
+        class="w-full text-2xs px-2 py-1 rounded border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary transition-colors"
+      >
+        Use procedural texture
+      </button>
+    }
+  </div>
+
+  <div class="border-t border-border"></div>
+
+  <!-- Glass -->
+  <div class="space-y-3">
+    <span class="block text-xs font-medium text-text-secondary">
+      Glass
+    </span>
+
+    <!-- Distortion -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-center">
+        <label for="distortion" class="text-xs text-text-muted font-medium">
+          Distortion
+        </label>
+        <span
+          class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+          [class.text-accent-primary]="isModified('distortion')"
+          [class.text-text-secondary]="!isModified('distortion')"
+        >
+          {{ filters.distortion }}
+        </span>
+      </div>
+      <input
+        id="distortion"
+        type="range"
+        step="1"
+        [min]="CONFIG.DISTORTION.MIN"
+        [max]="CONFIG.DISTORTION.MAX"
+        [value]="filters.distortion"
+        (input)="setValue('distortion', $any($event.target).value)"
+        (dblclick)="resetValue('distortion')"
+        class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        [class.slider-modified]="isModified('distortion')"
+        style="background: var(--color-bg-primary)"
+      />
+    </div>
+
+    <!-- Smoothness -->
+    <div class="space-y-2">
+      <div class="flex justify-between items-center">
+        <label for="smoothness" class="text-xs text-text-muted font-medium">
+          Smoothness
+        </label>
+        <span
+          class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+          [class.text-accent-primary]="isModified('smoothness')"
+          [class.text-text-secondary]="!isModified('smoothness')"
+        >
+          {{ filters.smoothness }}
+        </span>
+      </div>
+      <input
+        id="smoothness"
+        type="range"
+        step="1"
+        [min]="CONFIG.SMOOTHNESS.MIN"
+        [max]="CONFIG.SMOOTHNESS.MAX"
+        [value]="filters.smoothness"
+        (input)="setValue('smoothness', $any($event.target).value)"
+        (dblclick)="resetValue('smoothness')"
+        class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        [class.slider-modified]="isModified('smoothness')"
+        style="background: var(--color-bg-primary)"
+      />
+    </div>
+
+    <!-- Transform (UV) - collapsed by default so the five extra sliders
+         don't dominate a panel most sessions never touch. -->
+    <div class="pt-1">
+      <button
+        type="button"
+        (click)="toggleTransform()"
+        class="w-full flex items-center justify-between gap-2 -mx-2 px-2 py-1.5 rounded cursor-pointer transition-colors hover:bg-hover group"
+        [attr.aria-expanded]="transformOpen()"
+      >
+        <span class="text-xs font-medium transition-colors" [class.text-accent-primary]="isTransformModified()" [class.text-text-secondary]="!isTransformModified()">
+          Transform
+        </span>
+        <!-- The rotation rides on className so it lands on the svg itself:
+             a transform on the host element would not apply. -->
+        <chevron-down-icon
+          [className]="
+            'w-3.5 h-3.5 shrink-0 text-text-muted group-hover:text-text-secondary transition-transform duration-200 ' +
+            (transformOpen() ? 'rotate-180' : 'rotate-0')
+          "
+        />
+      </button>
+
+      @if (transformOpen()) {
+        <div class="space-y-3 pt-2">
+          <!-- Scale U / V -->
+          <div class="grid grid-cols-2 gap-2">
+            <div class="space-y-1">
+              <div class="flex justify-between items-center">
+                <label for="scaleU" class="text-3xs text-text-muted font-medium">
+                  Scale U
+                </label>
+                <span
+                  class="text-3xs tabular-nums transition-colors tracking-wider"
+                  [class.text-accent-primary]="isModified('scaleU')"
+                  [class.text-text-secondary]="!isModified('scaleU')"
+                >
+                  {{ filters.scaleU }}%
+                </span>
+              </div>
+              <input
+                id="scaleU"
+                type="range"
+                step="1"
+                [min]="CONFIG.SCALE.MIN"
+                [max]="CONFIG.SCALE.MAX"
+                [value]="filters.scaleU"
+                (input)="setScale('scaleU', $any($event.target).value)"
+                (dblclick)="resetValue('scaleU')"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+                [class.slider-modified]="isModified('scaleU')"
+                style="background: var(--color-bg-primary)"
+              />
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between items-center">
+                <label for="scaleV" class="text-3xs text-text-muted font-medium">
+                  Scale V
+                </label>
+                <span
+                  class="text-3xs tabular-nums transition-colors tracking-wider"
+                  [class.text-accent-primary]="isModified('scaleV')"
+                  [class.text-text-secondary]="!isModified('scaleV')"
+                >
+                  {{ filters.scaleV }}%
+                </span>
+              </div>
+              <input
+                id="scaleV"
+                type="range"
+                step="1"
+                [min]="CONFIG.SCALE.MIN"
+                [max]="CONFIG.SCALE.MAX"
+                [value]="filters.scaleV"
+                [disabled]="filters.linkScale"
+                (input)="setScale('scaleV', $any($event.target).value)"
+                (dblclick)="resetValue('scaleV')"
+                class="w-full h-2 rounded-lg appearance-none"
+                [class.cursor-pointer]="!filters.linkScale"
+                [class.opacity-40]="filters.linkScale"
+                [class.slider-modified]="isModified('scaleV')"
+                style="background: var(--color-bg-primary)"
+              />
+            </div>
+          </div>
+
+          <!-- Linked keeps scaling uniform, which is the usual case -->
+          <button
+            type="button"
+            (click)="toggleLinkScale()"
+            class="w-full px-2 py-1 text-3xs font-medium rounded transition-colors duration-200 border"
+            [class]="
+              filters.linkScale
+                ? 'bg-accent-primary text-bg-primary border-accent-primary'
+                : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+            "
+          >
+            {{ filters.linkScale ? "Linked" : "Independent" }}
+          </button>
+
+          <!-- Offset U / V -->
+          <div class="grid grid-cols-2 gap-2">
+            <div class="space-y-1">
+              <div class="flex justify-between items-center">
+                <label for="offsetU" class="text-3xs text-text-muted font-medium">
+                  Offset U
+                </label>
+                <span
+                  class="text-3xs tabular-nums transition-colors tracking-wider"
+                  [class.text-accent-primary]="isModified('offsetU')"
+                  [class.text-text-secondary]="!isModified('offsetU')"
+                >
+                  {{ filters.offsetU }}
+                </span>
+              </div>
+              <input
+                id="offsetU"
+                type="range"
+                step="1"
+                [min]="CONFIG.OFFSET.MIN"
+                [max]="CONFIG.OFFSET.MAX"
+                [value]="filters.offsetU"
+                (input)="setValue('offsetU', $any($event.target).value)"
+                (dblclick)="resetValue('offsetU')"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+                [class.slider-modified]="isModified('offsetU')"
+                style="background: var(--color-bg-primary)"
+              />
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between items-center">
+                <label for="offsetV" class="text-3xs text-text-muted font-medium">
+                  Offset V
+                </label>
+                <span
+                  class="text-3xs tabular-nums transition-colors tracking-wider"
+                  [class.text-accent-primary]="isModified('offsetV')"
+                  [class.text-text-secondary]="!isModified('offsetV')"
+                >
+                  {{ filters.offsetV }}
+                </span>
+              </div>
+              <input
+                id="offsetV"
+                type="range"
+                step="1"
+                [min]="CONFIG.OFFSET.MIN"
+                [max]="CONFIG.OFFSET.MAX"
+                [value]="filters.offsetV"
+                (input)="setValue('offsetV', $any($event.target).value)"
+                (dblclick)="resetValue('offsetV')"
+                class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+                [class.slider-modified]="isModified('offsetV')"
+                style="background: var(--color-bg-primary)"
+              />
+            </div>
+          </div>
+
+          <!-- Rotation also turns the smear direction, since the displacement
+               follows the gradient of the map -->
+          <div class="space-y-1">
+            <div class="flex justify-between items-center">
+              <label for="rotation" class="text-3xs text-text-muted font-medium">
+                Rotation
+              </label>
+              <span
+                class="text-3xs tabular-nums transition-colors tracking-wider"
+                [class.text-accent-primary]="isModified('rotation')"
+                [class.text-text-secondary]="!isModified('rotation')"
+              >
+                {{ filters.rotation }}°
+              </span>
+            </div>
+            <input
+              id="rotation"
+              type="range"
+              step="1"
+              [min]="CONFIG.ROTATION.MIN"
+              [max]="CONFIG.ROTATION.MAX"
+              [value]="filters.rotation"
+              (input)="setValue('rotation', $any($event.target).value)"
+              (dblclick)="resetValue('rotation')"
+              class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+              [class.slider-modified]="isModified('rotation')"
+              style="background: var(--color-bg-primary)"
+            />
+          </div>
+
+          <button
+            type="button"
+            (click)="resetTransform()"
+            class="w-full text-3xs px-2 py-1 rounded border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary transition-colors"
+          >
+            Reset transform
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Invert -->
+    <label
+      class="flex items-center gap-2 cursor-pointer mt-1"
+      (click)="toggleInvert()"
+    >
+      <div
+        class="w-4 h-4 rounded border transition-colors flex items-center justify-center"
+        [class.bg-accent-primary]="filters.invert"
+        [class.border-accent-primary]="filters.invert"
+        [class.border-border]="!filters.invert"
+      >
+        @if (filters.invert) {
+          <svg
+            class="w-3 h-3"
+            style="color: oklch(10% 0 0)"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+          >
+            <path d="M20 6L9 17l-5-5" />
+          </svg>
+        }
+      </div>
+      <span class="text-xs text-text-secondary font-medium">
+        Invert texture
+      </span>
+    </label>
+  </div>
+
+  <div class="border-t border-border"></div>
+
+  <!-- Frosting -->
+  <div class="space-y-2">
+    <span class="block text-xs font-medium text-text-secondary">
+      Frosting
+    </span>
+    <div class="flex justify-between items-center">
+      <label for="blur" class="text-xs text-text-muted font-medium">
+        Blur
+      </label>
+      <span
+        class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+        [class.text-accent-primary]="isModified('blur')"
+        [class.text-text-secondary]="!isModified('blur')"
+      >
+        {{ filters.blur }}px
+      </span>
+    </div>
+    <input
+      id="blur"
+      type="range"
+      step="1"
+      [min]="CONFIG.BLUR.MIN"
+      [max]="CONFIG.BLUR.MAX"
+      [value]="filters.blur"
+      (input)="setValue('blur', $any($event.target).value)"
+      (dblclick)="resetValue('blur')"
+      class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+      [class.slider-modified]="isModified('blur')"
+      style="background: var(--color-bg-primary)"
+    />
+  </div>
+
+  <div class="border-t border-border"></div>
+
+  <!-- Glass region -->
+  <div class="space-y-2">
+    <span class="block text-xs font-medium text-text-secondary">
+      Glass region
+    </span>
+    <div class="grid grid-cols-3 gap-1.5">
+      <button
+        type="button"
+        (click)="setMaskMode('full')"
+        class="px-1 py-1.5 text-2xs font-medium rounded transition-colors duration-200 border"
+        [class]="
+          filters.maskMode === 'full'
+            ? 'bg-accent-primary text-bg-primary border-accent-primary'
+            : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+        "
+      >
+        Whole
+      </button>
+      <button
+        type="button"
+        (click)="setMaskMode('rect')"
+        class="px-1 py-1.5 text-2xs font-medium rounded transition-colors duration-200 border"
+        [class]="
+          filters.maskMode === 'rect'
+            ? 'bg-accent-primary text-bg-primary border-accent-primary'
+            : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+        "
+      >
+        Rectangle
+      </button>
+      <button
+        type="button"
+        (click)="setMaskMode('polygon')"
+        class="px-1 py-1.5 text-2xs font-medium rounded transition-colors duration-200 border"
+        [class]="
+          filters.maskMode === 'polygon'
+            ? 'bg-accent-primary text-bg-primary border-accent-primary'
+            : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+        "
+      >
+        Polygon
+      </button>
+    </div>
+
+    @if (isMasked()) {
+      <p class="text-3xs text-text-muted/60 leading-snug">
+        @if (filters.maskMode === "polygon") {
+          Drag a corner to move it, or inside to move the shape. Double-click an
+          edge to add a corner, or a corner to remove it (minimum 3).
+        } @else {
+          Drag inside the box to move it, or the handles to resize.
+        }
+        Hold Space to hide the frame.
+      </p>
+      <div class="space-y-2 pt-1">
+        <div class="flex justify-between items-center">
+          <label for="feather" class="text-xs text-text-muted font-medium">
+            Feather
+          </label>
+          <span
+            class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+            [class.text-accent-primary]="isModified('feather')"
+            [class.text-text-secondary]="!isModified('feather')"
+          >
+            {{ filters.feather }}px
+          </span>
+        </div>
+        <input
+          id="feather"
+          type="range"
+          step="1"
+          [min]="CONFIG.FEATHER.MIN"
+          [max]="CONFIG.FEATHER.MAX"
+          [value]="filters.feather"
+          (input)="setValue('feather', $any($event.target).value)"
+          (dblclick)="resetValue('feather')"
+          class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+          [class.slider-modified]="isModified('feather')"
+          style="background: var(--color-bg-primary)"
+        />
+      </div>
+      <button
+        type="button"
+        (click)="resetRegion()"
+        class="w-full text-xs px-2 py-1.5 rounded border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary transition-colors"
+      >
+        Reset region
+      </button>
+    }
+  </div>
+
+  <div class="border-t border-border"></div>
+
+  <button
+    type="button"
+    (click)="resetAll()"
+    class="w-full text-xs px-2 py-1.5 rounded border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary transition-colors"
+  >
+    Reset all settings
+  </button>
+</div>

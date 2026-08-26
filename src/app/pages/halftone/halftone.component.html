@@ -1,0 +1,127 @@
+<main-layout className="max-w-none mx-0 p-0 pt-14">
+  <tool-shell>
+    <halftone-filters panel></halftone-filters>
+
+      <!-- Header -->
+      <div class="px-6 pt-5 pb-3">
+        <div class="flex items-center gap-3 mb-1">
+          <h1 class="text-xl font-semibold tracking-wide">Halftone</h1>
+          <processing-indicator
+            [active]="canvasService.isProcessing() || canvasService.isExporting()"
+            label="Screening"
+          />
+        </div>
+        <p
+          class="text-sm text-text-secondary max-w-xl font-normal"
+        >
+          Breaks a photo into a printer's screen, where a grid of dots carries
+          the tone through their area. One ink, or four plates overprinted on
+          the traditional angles.
+        </p>
+      </div>
+
+      <!-- Toolbar -->
+      @if (canvasService.hasImage()) {
+        <div class="flex items-center gap-2 px-6 pb-3">
+          <button
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border border-border text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary disabled:opacity-40 disabled:cursor-not-allowed"
+            (click)="downloadCanvas()"
+            [disabled]="canvasService.isExporting()"
+            [title]="'Re-screens at ' + exportLabel()"
+          >
+            <download-icon className="w-3.5 h-3.5" />
+            @if (canvasService.isExporting()) {
+              Exporting...
+            } @else {
+              Download
+            }
+          </button>
+
+          <!-- Screening is the expensive pass, so it can be put under manual
+               control. Ink and paper keep updating either way. -->
+          <button
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border"
+            [class]="
+              filtersService.liveChanges()
+                ? 'bg-accent-primary text-bg-primary border-accent-primary'
+                : 'bg-transparent text-text-secondary border-border hover:bg-hover'
+            "
+            (click)="toggleLive()"
+            [title]="
+              filtersService.liveChanges()
+                ? 'Screening follows the controls. Turn off to apply manually.'
+                : 'Screening waits for Apply.'
+            "
+          >
+            Live preview
+          </button>
+
+          @if (!filtersService.liveChanges()) {
+            <button
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border disabled:opacity-40 disabled:cursor-not-allowed"
+              [class]="
+                canvasService.hasPendingChanges()
+                  ? 'border-accent-primary text-accent-primary hover:bg-hover'
+                  : 'border-border text-text-secondary'
+              "
+              (click)="applyNow()"
+              [disabled]="
+                !canvasService.hasPendingChanges() ||
+                canvasService.isProcessing()
+              "
+            >
+              Apply
+            </button>
+          }
+
+          <!-- Zoom is display-only; the exported file is unaffected -->
+          <div class="ml-1">
+            <zoom-control
+              [zoom]="filtersService.zoom()"
+              (zoomChange)="setZoom($event)"
+            />
+          </div>
+
+          @if (canvasService.isProcessing()) {
+            <span
+              class="text-xs text-text-muted font-normal"
+            >
+              Screening...
+            </span>
+          } @else if (canvasService.hasPendingChanges()) {
+            <span
+              class="text-xs text-accent-primary font-normal"
+            >
+              Changes not applied
+            </span>
+          } @else if (canvasService.lastRenderMs() !== null) {
+            <span class="text-xs text-text-muted/60 tabular-nums">
+              {{ sizeLabel() }}, shown at {{ zoomLabel() }},
+              {{ dotsLabel() }} dots, {{ canvasService.lastRenderMs() }} ms
+            </span>
+          }
+        </div>
+      }
+
+      <!-- Canvas -->
+      <div class="flex-1 min-h-0 px-6 pb-4">
+        <div
+          class="rounded-lg overflow-hidden border border-border h-full"
+          style="background: var(--color-bg-canvas)"
+        >
+          @if (canvasService.hasImage()) {
+            <halftone-canvas></halftone-canvas>
+          } @else {
+            <div
+              class="flex flex-col items-center justify-center gap-2 py-24 text-center"
+            >
+              <p class="text-sm text-text-muted">No image loaded</p>
+              <p class="text-xs text-text-muted/60">
+                Upload one from the Controls panel to start.
+              </p>
+            </div>
+          }
+        </div>
+      </div>
+  </tool-shell>
+</main-layout>

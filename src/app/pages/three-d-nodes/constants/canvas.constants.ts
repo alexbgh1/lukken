@@ -2,12 +2,11 @@
   Note: ThreeJS uses hexadecimal color values.
   Example: 0xFF0000 for red.
 
-  This file handles almost all the constants to the Three-d-nodes canvas.
-  The only value that is not included here is the connectivity selector
+  This file handles almost all the constants for the 3D Nodes canvas.
 */
 
 const SCENE_CONFIG = {
-  BACKGROUND_COLOR: 0x1a1a2e, // Dark purple background // bg-canvas in tailwind
+  BACKGROUND_COLOR: 0x1a1a2e,
   FOV: 75,
   NEAR_PLANE: 0.1,
   FAR_PLANE: 1000,
@@ -17,7 +16,6 @@ const CAMERA_CONFIG = {
   INITIAL_POSITION_Z: 30,
   MIN_DISTANCE: 10,
   CAMERA_DISTANCE_MULTIPLIER: 1.2,
-  CAMERA_OFFSET_MULTIPLIER: 0.7,
 };
 
 const LIGHTING_CONFIG = {
@@ -68,10 +66,10 @@ const NODE_CONFIG = {
   COLOR_COMPONENTS: 3, // RGB
 };
 
-const CONNECTION_CONFIG = {
-  COLOR: 0x888888,
-  OPACITY: 0.3,
-  TRANSPARENT: true,
+export const BLOOM_CONFIG = {
+  STRENGTH: 1.2,
+  RADIUS: 0.6,
+  THRESHOLD: 0.1,
 };
 
 const CANVAS_CONFIG = {
@@ -82,7 +80,6 @@ const CANVAS_CONFIG = {
   RENDERER_CONFIG,
   IMAGE_PROCESSING,
   NODE_CONFIG,
-  CONNECTION_CONFIG,
 };
 
 export {
@@ -94,5 +91,4 @@ export {
   RENDERER_CONFIG,
   IMAGE_PROCESSING,
   NODE_CONFIG,
-  CONNECTION_CONFIG,
 };

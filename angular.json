@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "nebula-pix": {
+    "lukken": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/nebula-pix",
+            "outputPath": "dist/lukken",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
@@ -22,6 +22,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "OFL.txt",
+                "input": "src/assets/fonts/Pliant",
+                "output": "fonts/Pliant"
               }
             ],
             "styles": ["src/styles.css"],
@@ -64,10 +69,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "nebula-pix:build:production"
+              "buildTarget": "lukken:build:production"
             },
             "development": {
-              "buildTarget": "nebula-pix:build:development"
+              "buildTarget": "lukken:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -82,9 +87,6 @@
             "buildTarget": ":build:testing",
             "runner": "vitest"
           }
-        },
-        "deploy": {
-          "builder": "angular-cli-ghpages:deploy"
         }
       }
     }

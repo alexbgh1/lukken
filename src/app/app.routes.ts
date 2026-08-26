@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { LandingComponent } from './pages/landing/landing.component';
+import { NotFoundComponent } from './pages/not-found/not-found.component';
 
 export const routes: Routes = [
   {
@@ -14,13 +15,6 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'dead-pixels',
-    loadComponent: () =>
-      import('./pages/dead-pixels/dead-pixels.component').then(
-        (module) => module.DeadPixelsComponent
-      ),
-  },
-  {
     path: 'pixel-sort',
     loadComponent: () =>
       import('./pages/pixel-sort/pixel-sort.component').then(
@@ -28,8 +22,30 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'halftone',
+    loadComponent: () =>
+      import('./pages/halftone/halftone.component').then(
+        (module) => module.HalftoneComponent
+      ),
+  },
+  {
+    path: 'glass',
+    loadComponent: () =>
+      import('./pages/glass/glass.component').then(
+        (module) => module.GlassComponent
+      ),
+  },
+  {
+    path: 'layouts',
+    loadComponent: () =>
+      import('./pages/layouts/layouts.component').then(
+        (module) => module.LayoutsComponent
+      ),
+  },
+  {
+    // Eager, unlike the tools: this is what a broken link lands on, and a
+    // chunk that fails to load would leave nothing at all on screen.
     path: '**',
-    redirectTo: '',
-    pathMatch: 'full',
+    component: NotFoundComponent,
   },
 ];

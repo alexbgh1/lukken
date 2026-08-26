@@ -1,136 +1,104 @@
-<div
-  class="flex flex-col gap-6 p-6 bg-bg-tertiary rounded-xl border border-border sm:min-w-sm max-w-md mx-auto"
->
-  <form
-    [formGroup]="canvasFiltersFormControl"
-    (ngSubmit)="onSubmit()"
-    class="space-y-6"
-  >
-    <!-- Input Image -->
-    <div class="space-y-1">
-      <label
-        class="block text-sm font-medium text-text-secondary"
-        for="imageInput"
-        >Image Upload</label
-      >
-      <div class="flex items-center gap-4">
-        <label
-          for="imageInput"
-          class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer transition-colors"
-          [class.border-accent-primary]="isDragging"
-          [class.border-gray-700]="!isDragging"
-          (dragover)="onDragOver($event)"
-          (dragleave)="onDragLeave($event)"
-          (drop)="onDrop($event)"
-        >
-          <div class="flex flex-col items-center justify-center pt-5 pb-6">
-            <upload-icon
-              className="{{
-                isDragging ? 'text-accent-primary' : 'text-text-secondary'
-              }}"
-            ></upload-icon>
-            @if (!canvasFiltersFormControl.value.image) {
-            <p
-              class="mb-2 text-sm"
-              [class.text-accent-primary]="isDragging"
-              [class.text-text-muted]="!isDragging"
-            >
-              <span class="font-semibold">Click to upload</span> or drag and
-              drop
-            </p>
-            } @if (canvasFiltersFormControl.value.image) {
-            <p class="text-center text-xs text-text-muted">
-              {{ canvasFiltersFormControl.value.image.name }}
-            </p>
-            }
-          </div>
-          <input
-            id="imageInput"
-            type="file"
-            accept="image/*"
-            (change)="onFileSelected($event)"
-            class="hidden"
-            [attr.accept]="FILE_CONFIG.ACCEPTED_TYPE.join(',')"
-          />
-        </label>
-      </div>
-    </div>
+<div class="flex flex-col gap-5">
+  <form [formGroup]="canvasFiltersFormControl" (ngSubmit)="onSubmit()">
+    <image-upload
+      inputId="imageInput"
+      [previewUrl]="filtersData.imageSlot.url()"
+      [fileName]="filtersData.imageSlot.name()"
+      [maxSize]="FILE_CONFIG.MAX_SIZE"
+      [error]="filtersData.loadError()"
+      (fileSelected)="onImageSelected($event)"
+      (cleared)="onImageCleared()"
+    />
 
-    <!-- Error message -->
-    <div class="text-sm text-accent-primary space-y-1">
-      @if (fileDropError) {
-      <div>
-        {{ fileDropError }}
-      </div>
-      }
-      <!-- Error Messages -->
-      @if ( canvasFiltersFormControl.get('image')?.errors &&
-      canvasFiltersFormControl.get('image')?.touched ) {
+    <!-- Separator -->
+    <div class="border-t border-border my-4"></div>
 
-      <div>
-        <!-- error: required image-->
-        @if (canvasFiltersFormControl.get('image')?.errors?.['maxSize']) {
-        <div>Image is required</div>
-        }
-
-        <!-- error: max file size -->
-        @if (canvasFiltersFormControl.get('image')?.errors?.['maxSize']) {
-        <div>
-          {{ canvasFiltersFormControl.get('image')?.errors?.['maxSize'] }}
+    @if (!canvasFiltersFormControl.value.colorCloud) {
+      <!-- Grid Size -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <label for="gridSize" class="text-xs text-text-muted font-medium">
+            Grid
+          </label>
+          <span
+            class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+            [class.text-accent-primary]="
+              canvasFiltersFormControl.value.gridSize !== GRID_SIZE.DEFAULT
+            "
+            [class.text-text-secondary]="
+              canvasFiltersFormControl.value.gridSize === GRID_SIZE.DEFAULT
+            "
+          >
+            {{ canvasFiltersFormControl.value.gridSize }}
+          </span>
         </div>
-        }
+        <input
+          id="gridSize"
+          type="range"
+          [min]="GRID_SIZE.MIN"
+          [max]="GRID_SIZE.MAX"
+          step="1"
+          formControlName="gridSize"
+          (dblclick)="resetGrid()"
+          class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+          [class.slider-modified]="
+            canvasFiltersFormControl.value.gridSize !== GRID_SIZE.DEFAULT
+          "
+          style="background: var(--color-bg-primary)"
+        />
       </div>
-      }
-    </div>
 
-    <!-- Grid Size Slider -->
-    <div>
+      <!-- Spacing -->
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <label for="spacing" class="text-xs text-text-muted font-medium">
+            Spacing
+          </label>
+          <span
+            class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+            [class.text-accent-primary]="
+              canvasFiltersFormControl.value.spacing !== SPACING.DEFAULT
+            "
+            [class.text-text-secondary]="
+              canvasFiltersFormControl.value.spacing === SPACING.DEFAULT
+            "
+          >
+            {{ canvasFiltersFormControl.value.spacing }}
+          </span>
+        </div>
+        <input
+          id="spacing"
+          type="range"
+          [min]="SPACING.MIN"
+          [max]="SPACING.MAX"
+          step="0.1"
+          formControlName="spacing"
+          (dblclick)="resetSpacing()"
+          class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+          [class.slider-modified]="
+            canvasFiltersFormControl.value.spacing !== SPACING.DEFAULT
+          "
+          style="background: var(--color-bg-primary)"
+        />
+      </div>
+    }
+
+    <!-- Node Size -->
+    <div class="space-y-2">
       <div class="flex justify-between items-center">
-        <label
-          for="gridSize"
-          class="block text-sm font-medium text-text-secondary"
-          >Grid Size</label
+        <label for="nodeSize" class="text-xs text-text-muted font-medium">
+          Node
+        </label>
+        <span
+          class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+          [class.text-accent-primary]="
+            canvasFiltersFormControl.value.nodeSize !== NODE_SIZE.DEFAULT
+          "
+          [class.text-text-secondary]="
+            canvasFiltersFormControl.value.nodeSize === NODE_SIZE.DEFAULT
+          "
         >
-        <span class="text-sm font-mono text-text-primary">
-          {{ canvasFiltersFormControl.value.gridSize }}
-        </span>
-      </div>
-      <input
-        id="gridSize"
-        type="range"
-        [min]="GRID_SIZE.MIN"
-        [max]="GRID_SIZE.MAX"
-        step="1"
-        formControlName="gridSize"
-        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
-      />
-      <!-- Error Messages -->
-      @if ( canvasFiltersFormControl.get('gridSize')?.errors &&
-      canvasFiltersFormControl.get('gridSize')?.touched) {
-      <!-- Max and min Value for GRID_SIZE -->
-      <div class="text-sm text-accent-primary space-y-1">
-        <!-- error: min GRID_SIZE -->
-        @if (canvasFiltersFormControl.get('gridSize')?.errors?.['min']) {
-        <div>Minimum value is {{ GRID_SIZE.MIN }}</div>
-
-        <!-- error: max GRID_SIZE -->
-        } @if (canvasFiltersFormControl.get('gridSize')?.errors?.['max']) {
-        <div>Maximum value is {{ GRID_SIZE.MAX }}</div>
-        }
-      </div>
-      }
-    </div>
-
-    <!-- Node Size Slider -->
-    <div>
-      <div class="flex justify-between items-center">
-        <label
-          for="nodeSize"
-          class="block text-sm font-medium text-text-secondary"
-          >Node Size</label
-        >
-        <span class="text-sm font-mono text-text-primary">
-          {{ canvasFiltersFormControl.value.nodeSize | number : "1.2-2" }}
+          {{ canvasFiltersFormControl.value.nodeSize }}
         </span>
       </div>
       <input
@@ -138,105 +106,283 @@
         type="range"
         [min]="NODE_SIZE.MIN"
         [max]="NODE_SIZE.MAX"
-        step=".1"
-        formControlName="nodeSize"
-        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
-      />
-
-      <!-- Error Messages -->
-      @if ( canvasFiltersFormControl.get('nodeSize')?.errors &&
-      canvasFiltersFormControl.get('nodeSize')?.touched) {
-
-      <div class="text-sm text-accent-primary space-y-1">
-        <!-- error: min NODE_SIZE -->
-        @if (canvasFiltersFormControl.get('nodeSize')?.errors?.['min']) {
-        <div>Minimum value is {{ NODE_SIZE.MIN }}</div>
-        }
-
-        <!-- error: max NODE_SIZE -->
-        @if (canvasFiltersFormControl.get('nodeSize')?.errors?.['max']) {
-        <div>Maximum value is {{ NODE_SIZE.MAX }}</div>
-        }
-      </div>
-      }
-    </div>
-
-    <!-- Spacing Slider -->
-    <div>
-      <div class="flex justify-between items-center">
-        <label
-          for="spacing"
-          class="block text-sm font-medium text-text-secondary"
-          >Spacing</label
-        >
-        <span class="text-sm font-mono text-text-primary">
-          {{ canvasFiltersFormControl.value.spacing | number : "1.1-1" }}
-        </span>
-      </div>
-      <input
-        id="spacing"
-        type="range"
-        [min]="SPACING.MIN"
-        [max]="SPACING.MAX"
         step="0.1"
-        formControlName="spacing"
-        class="w-full h-2 bg-bg-secondary rounded-lg appearance-none cursor-pointer"
+        formControlName="nodeSize"
+        (dblclick)="resetNodeSize()"
+        class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+        [class.slider-modified]="
+          canvasFiltersFormControl.value.nodeSize !== NODE_SIZE.DEFAULT
+        "
+        style="background: var(--color-bg-primary)"
       />
+    </div>
 
-      <!-- Error Messages -->
-      @if ( canvasFiltersFormControl.get('spacing')?.errors &&
-      canvasFiltersFormControl.get('spacing')?.touched ) {
+    <!-- Color Cloud -->
+    <div class="space-y-2.5 pb-2">
+      <label class="block text-xs text-text-muted font-medium"> Mode </label>
+      <div class="flex gap-2">
+        <button
+          type="button"
+          class="flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border"
+          [class.bg-accent-primary]="!canvasFiltersFormControl.value.colorCloud"
+          [class.text-bg-primary]="!canvasFiltersFormControl.value.colorCloud"
+          [class.border-accent-primary]="
+            !canvasFiltersFormControl.value.colorCloud
+          "
+          [class.bg-transparent]="canvasFiltersFormControl.value.colorCloud"
+          [class.text-text-secondary]="
+            canvasFiltersFormControl.value.colorCloud
+          "
+          [class.border-border]="canvasFiltersFormControl.value.colorCloud"
+          [class.hover:bg-hover]="canvasFiltersFormControl.value.colorCloud"
+          (click)="toggleColorCloud()"
+        >
+          Grid
+        </button>
+        <button
+          type="button"
+          class="flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border"
+          [class.bg-accent-primary]="canvasFiltersFormControl.value.colorCloud"
+          [class.text-bg-primary]="canvasFiltersFormControl.value.colorCloud"
+          [class.border-accent-primary]="
+            canvasFiltersFormControl.value.colorCloud
+          "
+          [class.bg-transparent]="!canvasFiltersFormControl.value.colorCloud"
+          [class.text-text-secondary]="
+            !canvasFiltersFormControl.value.colorCloud
+          "
+          [class.border-border]="!canvasFiltersFormControl.value.colorCloud"
+          [class.hover:bg-hover]="!canvasFiltersFormControl.value.colorCloud"
+          (click)="toggleColorCloud()"
+        >
+          Cloud
+        </button>
+      </div>
+    </div>
 
-      <div class="text-sm text-accent-primary space-y-1">
-        <!-- error: min spacing -->
-        @if ( canvasFiltersFormControl.get('spacing')?.errors?.['min'] ) {
-        <div>Minimum value is {{ SPACING.MIN }}</div>
+    @if (canvasFiltersFormControl.value.colorCloud) {
+      <div class="space-y-2.5 pb-2">
+        <label class="block text-xs text-text-muted font-medium">
+          Cloud Mode
+        </label>
+        <div class="grid grid-cols-2 gap-2">
+          @for (opt of CLOUD_MODE_LIST; track opt.value) {
+            <button
+              type="button"
+              class="px-2 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border truncate"
+              [class.bg-accent-primary]="
+                canvasFiltersFormControl.value.cloudMode === opt.value
+              "
+              [class.text-bg-primary]="
+                canvasFiltersFormControl.value.cloudMode === opt.value
+              "
+              [class.border-accent-primary]="
+                canvasFiltersFormControl.value.cloudMode === opt.value
+              "
+              [class.bg-transparent]="
+                canvasFiltersFormControl.value.cloudMode !== opt.value
+              "
+              [class.text-text-secondary]="
+                canvasFiltersFormControl.value.cloudMode !== opt.value
+              "
+              [class.border-border]="
+                canvasFiltersFormControl.value.cloudMode !== opt.value
+              "
+              [class.hover:bg-hover]="
+                canvasFiltersFormControl.value.cloudMode !== opt.value
+              "
+              (click)="setCloudMode(opt.value); onSubmit()"
+            >
+              {{ opt.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="space-y-2">
+        <div class="flex justify-between items-center">
+          <label for="cloudSamples" class="text-xs text-text-muted font-medium">
+            Samples
+          </label>
+          <span
+            class="text-xs tabular-nums transition-colors font-normal tracking-wider"
+            [class.text-accent-primary]="
+              canvasFiltersFormControl.value.cloudSamples !==
+              CLOUD_SAMPLES.DEFAULT
+            "
+            [class.text-text-secondary]="
+              canvasFiltersFormControl.value.cloudSamples ===
+              CLOUD_SAMPLES.DEFAULT
+            "
+          >
+            {{ canvasFiltersFormControl.value.cloudSamples }}
+          </span>
+        </div>
+        <input
+          id="cloudSamples"
+          type="range"
+          [min]="CLOUD_SAMPLES.MIN"
+          [max]="CLOUD_SAMPLES.MAX"
+          [step]="CLOUD_SAMPLES.STEP"
+          formControlName="cloudSamples"
+          (dblclick)="resetCloudSamples()"
+          class="w-full h-2 rounded-lg appearance-none cursor-pointer"
+          [class.slider-modified]="
+            canvasFiltersFormControl.value.cloudSamples !==
+            CLOUD_SAMPLES.DEFAULT
+          "
+          style="background: var(--color-bg-primary)"
+        />
+      </div>
+
+      <div class="space-y-2">
+        <label class="text-xs text-text-muted font-medium"> Interactive </label>
+        <button
+          type="button"
+          class="w-full px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border"
+          [class.bg-accent-primary]="interactiveEnabled"
+          [class.text-bg-primary]="interactiveEnabled"
+          [class.border-accent-primary]="interactiveEnabled"
+          [class.bg-transparent]="!interactiveEnabled"
+          [class.text-text-secondary]="!interactiveEnabled"
+          [class.border-border]="!interactiveEnabled"
+          [class.hover:bg-hover]="!interactiveEnabled"
+          (click)="toggleInteractive()"
+        >
+          {{ interactiveEnabled ? "On" : "Off" }}
+        </button>
+      </div>
+    }
+
+    @if (nodeMetrics) {
+      <div
+        class="space-y-1.5 text-xs tabular-nums text-text-secondary border border-border rounded-lg p-3 font-normal tracking-wide"
+      >
+        <!-- Grid mode puts exactly one node in every cell, so the pixel
+             count and the sampled share only say something in Cloud mode. -->
+        @if (canvasFiltersFormControl.value.colorCloud) {
+          <div class="flex justify-between">
+            <span class="text-text-muted font-medium">Pixels</span>
+            <span>{{ nodeMetrics.cellCount }}</span>
+          </div>
         }
-
-        <!-- error: max spacing -->
-        @if (canvasFiltersFormControl.get('spacing')?.errors?.['max']) {
-        <div>Maximum value is {{ SPACING.MAX }}</div>
+        <div class="flex justify-between">
+          <span class="text-text-muted font-medium">Nodes</span>
+          <span>{{ nodeMetrics.nodeCount }}</span>
+        </div>
+        @if (canvasFiltersFormControl.value.colorCloud) {
+          <div class="flex justify-between">
+            <span class="text-text-muted font-medium">Sampled</span>
+            <span [class.text-accent-primary]="nodeMetrics.compressionRatio > 0"
+              >{{ nodeMetrics.compressionRatio }}%</span
+            >
+          </div>
         }
       </div>
+    }
+
+    <div class="space-y-2">
+      <label class="text-xs text-text-muted font-medium"> Background </label>
+      <div class="flex gap-2">
+        @for (opt of BACKGROUND_COLOR_LIST; track opt.value) {
+          <button
+            type="button"
+            class="flex-1 h-8 rounded-md border transition-colors duration-200"
+            [class.border-accent-primary]="
+              canvasFiltersFormControl.value.backgroundColor === opt.value
+            "
+            [class.border-border]="
+              canvasFiltersFormControl.value.backgroundColor !== opt.value
+            "
+            [style.background]="opt.value"
+            [title]="opt.label"
+            (click)="setBackground(opt.value)"
+          ></button>
+        }
+      </div>
+    </div>
+
+    <!-- Bloom -->
+    <div class="space-y-2">
+      <label class="text-xs text-text-muted font-medium"> Bloom </label>
+      <button
+        type="button"
+        class="w-full px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border"
+        [class.bg-accent-primary]="canvasFiltersFormControl.value.bloomEnabled"
+        [class.text-bg-primary]="canvasFiltersFormControl.value.bloomEnabled"
+        [class.border-accent-primary]="
+          canvasFiltersFormControl.value.bloomEnabled
+        "
+        [class.bg-transparent]="!canvasFiltersFormControl.value.bloomEnabled"
+        [class.text-text-secondary]="
+          !canvasFiltersFormControl.value.bloomEnabled
+        "
+        [class.border-border]="!canvasFiltersFormControl.value.bloomEnabled"
+        [class.hover:bg-hover]="!canvasFiltersFormControl.value.bloomEnabled"
+        (click)="
+          canvasFiltersFormControl
+            .get('bloomEnabled')
+            ?.setValue(!canvasFiltersFormControl.value.bloomEnabled);
+          onSubmit()
+        "
+      >
+        {{ canvasFiltersFormControl.value.bloomEnabled ? "On" : "Off" }}
+      </button>
+    </div>
+
+    <!-- Auto-Rotate -->
+    <div class="space-y-2">
+      <label class="text-xs text-text-muted font-medium"> Auto-Rotate </label>
+      <button
+        type="button"
+        class="w-full px-3 py-1.5 text-xs font-medium rounded-md transition-colors duration-200 border"
+        [class.bg-accent-primary]="canvasFiltersFormControl.value.autoRotate"
+        [class.text-bg-primary]="canvasFiltersFormControl.value.autoRotate"
+        [class.border-accent-primary]="
+          canvasFiltersFormControl.value.autoRotate
+        "
+        [class.bg-transparent]="!canvasFiltersFormControl.value.autoRotate"
+        [class.text-text-secondary]="!canvasFiltersFormControl.value.autoRotate"
+        [class.border-border]="!canvasFiltersFormControl.value.autoRotate"
+        [class.hover:bg-hover]="!canvasFiltersFormControl.value.autoRotate"
+        (click)="
+          canvasFiltersFormControl
+            .get('autoRotate')
+            ?.setValue(!canvasFiltersFormControl.value.autoRotate);
+          onSubmit()
+        "
+      >
+        {{ canvasFiltersFormControl.value.autoRotate ? "On" : "Off" }}
+      </button>
+      @if (canvasFiltersFormControl.value.autoRotate) {
+        <div class="flex justify-between items-center">
+          <span class="text-3xs text-text-muted">Slow</span>
+          <input
+            type="range"
+            [min]="AUTO_ROTATE.SPEED_MIN"
+            [max]="AUTO_ROTATE.SPEED_MAX"
+            [step]="AUTO_ROTATE.SPEED_STEP"
+            formControlName="autoRotateSpeed"
+            (input)="onSubmit()"
+            class="w-full h-2 mx-2 rounded-lg appearance-none cursor-pointer"
+            style="background: var(--color-bg-primary)"
+          />
+          <span class="text-3xs text-text-muted">Fast</span>
+        </div>
       }
     </div>
 
-    <!-- Connectivity Selector -->
-    <div class="space-y-1">
-      <label
-        for="connectivitySelector"
-        class="block text-sm font-medium text-text-secondary"
-        >Connectivity</label
-      >
-      <select
-        id="connectivitySelector"
-        formControlName="connectivitySelector"
-        class="bg-bg-secondary border border-border text-text-primary text-sm rounded-lg focus:ring-accent-primary focus:border-accent-primary block w-full p-2.5"
-      >
-        @for (connectivityOption of CONNECTIVITY.OPTIONS; track $index) {
-        <option [value]="connectivityOption">
-          {{ connectivityOption }}-way connectivity
-        </option>
-        }
-      </select>
+    <!-- Separator -->
+    <div class="border-t border-border my-4"></div>
 
-      <!-- Error Messages -->
-      @if ( canvasFiltersFormControl.get('connectivitySelector')?.errors &&
-      canvasFiltersFormControl.get('connectivitySelector')?.touched) {
-      <!-- error: no connectivity selected -->
-      <div class="text-sm text-accent-primary">
-        Please select a connectivity option
-      </div>
-      }
-    </div>
-
-    <!-- Submit Button -->
+    <!-- Generate -->
     <button
       type="submit"
       [disabled]="!canvasFiltersFormControl.valid"
-      class="w-full px-5 py-2.5 text-sm font-medium text-center text-text-primary bg-accent-primary rounded-lg hover:bg-accent-secondary transition-colors focus:ring-2 focus:outline-none focus:ring-accent-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+      class="w-full px-4 py-2 text-sm font-medium rounded-lg transition-[color,background-color,border-color,filter,scale] duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:brightness-100 disabled:active:scale-100 tracking-wider"
+      style="background: var(--color-accent-primary); color: oklch(10% 0 0)"
     >
-      Generate 3D Visualization
+      Generate
     </button>
   </form>
 </div>

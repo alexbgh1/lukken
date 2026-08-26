@@ -1,14 +1,22 @@
-<div
-  class="flex justify-center items-center w-full h-full mt-4 transition-opacity duration-500"
-  [class.opacity-100]="hasImage()"
-  [class.opacity-0]="!hasImage()"
->
-  @if (imageToShow()) {
-  <img
-    [src]="imageToShow()!.src"
-    class="max-w-full max-h-[90vh] object-contain rounded border border-border shadow-lg"
-    alt="Processed image"
-    loading="lazy"
-  />
-  }
-</div>
+@if (imageToShow()) {
+  <canvas-stage (resized)="reportScale()">
+    <!-- The wrapper hugs the image so the mask overlay, which is inset: 0 of
+         its positioned parent, lines up with the pixels exactly. -->
+    <div
+      class="relative w-fit h-fit"
+      [style.width]="styles().width"
+      [style.height]="styles().height"
+      [style.maxWidth]="styles().maxWidth"
+      [style.maxHeight]="styles().maxHeight"
+    >
+      <img
+        #displayed
+        [src]="imageToShow()!.src"
+        class="block w-full h-full"
+        alt="Processed image"
+        (load)="reportScale()"
+      />
+      <pixel-sort-mask-canvas [hasImage]="hasImage()" />
+    </div>
+  </canvas-stage>
+}

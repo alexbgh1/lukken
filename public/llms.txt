@@ -1,0 +1,35 @@
+# Lukken
+
+> Five browser tools for visualizing a photograph in a different way, from
+> printer's halftone screening to a 3D mesh of coloured nodes.
+
+Lukken is a static single-page application. Every tool reads an image from the
+visitor's own device, processes it on a canvas inside the page, and offers the
+result as a download. There is no server, no account and no storage: the image
+is never uploaded anywhere, and closing the tab discards the work.
+
+## Tools
+
+- [Pixel Sort](https://alexbgh1.github.io/lukken/pixel-sort): Rearranges
+  pixels by brightness or colour to produce glitch-like effects. Free sort
+  angle, a paintable mask to limit where it applies, and a circular mode that
+  sorts along rings around a movable pivot.
+- [3D Nodes](https://alexbgh1.github.io/lukken/3d-nodes): Turns a photo
+  into a 3D mesh of spheres, each node taking the average colour of its grid
+  cell. Orbit, zoom and several arrangement modes.
+- [Fractal Glass](https://alexbgh1.github.io/lukken/glass): Refracts a
+  photo through a procedural height map, the glass distortion effect, with a
+  movable region so only part of the image is affected and a feathered edge.
+- [Halftone](https://alexbgh1.github.io/lukken/halftone): Breaks a photo
+  into a printer's screen, where the area of each dot carries the tone. One
+  ink, or four plates overprinted on the traditional process angles.
+- [Layout Generator](https://alexbgh1.github.io/lukken/layouts): Composes
+  several photos into one frame, in 4:3 and 3:4 at once. Exports the individual
+  crops or the whole set as a zip.
+
+## Notes
+
+- Runs entirely client side. No image leaves the device, and there is no
+  analytics or tracking of any kind.
+- Downloads are PNG, except the Layout Generator, which writes JPEG.
+- Built with Angular and Tailwind CSS; 3D Nodes uses Three.js.

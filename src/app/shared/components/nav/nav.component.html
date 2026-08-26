@@ -5,16 +5,16 @@
     <!-- Desktop Navigation (sm and up) -->
     <ul class="hidden sm:flex space-x-4 justify-end">
       @for (item of navLinks; track $index) {
-      <li>
-        <a
-          [routerLink]="[item.href]"
-          [routerLinkActive]="['bg-bg-tertiary', 'text-white']"
-          class="px-4 py-2 rounded-md text-text-secondary hover:bg-hover active:bg-active transition-colors"
-          [routerLinkActiveOptions]="{ exact: true }"
-        >
-          {{ item.name }}
-        </a>
-      </li>
+        <li>
+          <a
+            [routerLink]="[item.href]"
+            [routerLinkActive]="['bg-[#7171714a]', 'text-white']"
+            class="px-4 py-2 rounded-md text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary transition-colors"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            {{ item.name }}
+          </a>
+        </li>
       }
     </ul>
 
@@ -22,71 +22,84 @@
     <div class="sm:hidden">
       <!-- Mobile Header with Hamburger -->
       <div class="flex justify-between items-center">
-        <div class="text-lg font-semibold text-text-primary">Pixel Perfect</div>
+        <div class="text-lg font-semibold text-text-primary">Lukken</div>
 
-        <!-- Hamburger Button -->
+        <!-- Hamburger Button. p-2.5 around a 24px box gives a 44px target. -->
         <button
+          type="button"
           (click)="toggleMenu()"
-          class="p-2 rounded-md text-text-secondary hover:bg-hover focus:outline-none focus:ring-2 focus:ring-accent-primary"
-          [attr.aria-expanded]="isMenuOpen"
-          aria-label="Toggle menu"
+          class="p-2.5 rounded-md text-text-secondary hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-primary transition-colors"
+          [attr.aria-expanded]="isMenuOpen()"
+          aria-controls="mobile-menu"
+          [attr.aria-label]="isMenuOpen() ? 'Close menu' : 'Open menu'"
         >
-          <!-- Hamburger Icon -->
+          <!-- The bars morph into a cross. Transform only, so it composites. -->
           <div
             class="w-6 h-6 flex flex-col justify-center items-center space-y-1"
           >
             <span
-              class="block w-5 h-0.5 bg-current transition-transform duration-300"
-              [class.rotate-45]="isMenuOpen"
-              [class.translate-y-1.5]="isMenuOpen"
+              class="block w-5 h-0.5 bg-current transition-transform duration-200 ease-out"
+              [style.transform]="
+                isMenuOpen() ? 'translateY(0.375rem) rotate(45deg)' : 'none'
+              "
             ></span>
             <span
-              class="block w-5 h-0.5 bg-current transition-opacity duration-300"
-              [class.opacity-0]="isMenuOpen"
+              class="block w-5 h-0.5 bg-current transition-opacity duration-200 ease-out"
+              [class.opacity-0]="isMenuOpen()"
             ></span>
             <span
-              class="block w-5 h-0.5 bg-current transition-transform duration-300"
-              [class.-rotate-45]="isMenuOpen"
-              [class.-translate-y-1.5]="isMenuOpen"
+              class="block w-5 h-0.5 bg-current transition-transform duration-200 ease-out"
+              [style.transform]="
+                isMenuOpen() ? 'translateY(-0.375rem) rotate(-45deg)' : 'none'
+              "
             ></span>
           </div>
         </button>
       </div>
 
-      <!-- Mobile Menu Dropdown - Fixed position -->
+      <!-- Mobile Menu Dropdown.
+           The panel is absolutely positioned, so it overlays rather than
+           pushing content: no height animation is needed at all. It slides and
+           fades on transform and opacity, which composite on the GPU, instead
+           of the max-height it used to animate. `inert` keeps the links out of
+           tab order and off screen readers while hidden. -->
       <div
-        class="absolute left-0 right-0 bg-bg-secondary border-b border-border transition-all duration-300 ease-in-out"
-        [class.max-h-0]="!isMenuOpen"
-        [class.max-h-screen]="isMenuOpen"
-        [class.opacity-0]="!isMenuOpen"
-        [class.opacity-100]="isMenuOpen"
-        [class.overflow-hidden]="!isMenuOpen"
+        id="mobile-menu"
+        class="absolute left-0 right-0 bg-bg-secondary border-b border-border transition-[opacity,transform] duration-200 ease-out"
+        [class.opacity-0]="!isMenuOpen()"
+        [class.pointer-events-none]="!isMenuOpen()"
+        [style.transform]="
+          isMenuOpen() ? 'translateY(0)' : 'translateY(-0.5rem)'
+        "
+        [inert]="!isMenuOpen()"
       >
         <ul class="px-4 py-4 space-y-2">
           @for (item of navLinks; track $index) {
-          <li>
-            <a
-              [routerLink]="[item.href]"
-              [routerLinkActive]="['bg-bg-tertiary', 'text-white']"
-              class="block px-4 py-3 rounded-md text-text-secondary hover:bg-hover active:bg-active transition-colors"
-              [routerLinkActiveOptions]="{ exact: true }"
-              (click)="closeMenu()"
-            >
-              {{ item.name }}
-            </a>
-          </li>
+            <li>
+              <a
+                [routerLink]="[item.href]"
+                [routerLinkActive]="['bg-[#7171714a]', 'text-white']"
+                class="block px-4 py-3 rounded-md text-text-secondary hover:bg-hover active:bg-active active:text-bg-primary transition-colors"
+                [routerLinkActiveOptions]="{ exact: true }"
+                (click)="closeMenu()"
+              >
+                {{ item.name }}
+              </a>
+            </li>
           }
         </ul>
       </div>
     </div>
   </div>
 
-  <!-- Backdrop for mobile menu -->
-  @if (isMenuOpen) {
+  <!-- Backdrop. Always rendered so it can fade with the panel; an @if would
+       pop it in and out. -->
   <div
-    class="fixed inset-0 bg-black bg-opacity-25 z-40 sm:hidden"
+    class="fixed inset-0 bg-black/40 z-40 sm:hidden transition-opacity duration-200 ease-out"
+    [class.opacity-0]="!isMenuOpen()"
+    [class.pointer-events-none]="!isMenuOpen()"
     (click)="closeMenu()"
+    aria-hidden="true"
     style="top: 100%"
   ></div>
-  }
 </nav>

@@ -1,0 +1,17 @@
+@if (active()) {
+  <span
+    class="inline-flex items-center gap-2 text-xs text-text-muted font-medium"
+    role="status"
+    aria-live="polite"
+  >
+    <span
+      class="inline-block w-3.5 h-3.5 rounded-full border-2 animate-spin"
+      style="
+        border-color: var(--color-border);
+        border-top-color: var(--color-accent-primary);
+      "
+      aria-hidden="true"
+    ></span>
+    {{ label() }}
+  </span>
+}

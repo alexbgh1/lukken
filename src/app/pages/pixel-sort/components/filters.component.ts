@@ -1,17 +1,25 @@
-import { Component, ViewChild, ElementRef, effect, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  effect,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 
-import { FormsModule } from '@angular/forms';
 import { PixelSortFiltersService } from '../services/filters.service';
 import { PixelSortCanvasService } from '../services/canvas.service';
+import { PixelSortMaskService } from '../services/mask.service';
 import {
   COLORS,
   PIXEL_SORT_CONFIG,
   PIXEL_SORT_MODES,
+  PixelSortMode,
 } from '../constants/pixel-sort.constants';
+import { ImageUploadComponent } from '@shared/components/image-upload/image-upload.component';
 
 @Component({
   selector: 'pixel-sort-filters',
-  imports: [FormsModule],
+  imports: [ImageUploadComponent],
   templateUrl: './filters.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   standalone: true,
@@ -19,21 +27,16 @@ import {
 export class PixelSortFiltersComponent {
   @ViewChild('histogramCanvas') histogramCanvas!: ElementRef<HTMLCanvasElement>;
   @ViewChild('angleCanvas') angleCanvas!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
   readonly CONFIG = PIXEL_SORT_CONFIG;
   readonly MODES = PIXEL_SORT_MODES;
 
-  showControls = true;
-  controlsHover = false;
-
   constructor(
     public filtersService: PixelSortFiltersService,
-    public canvasService: PixelSortCanvasService
+    public canvasService: PixelSortCanvasService,
+    public maskService: PixelSortMaskService,
   ) {
-    /* Redarw: if filter changes */
     effect(() => {
-      // Calling the service will update the filters
       this.filtersService.filters();
       setTimeout(() => {
         this.drawHistogram();
@@ -41,38 +44,30 @@ export class PixelSortFiltersComponent {
       });
     });
 
-    /* Redraw: Histogram */
     effect(() => {
       this.canvasService.histogramData();
       setTimeout(() => this.drawHistogram());
     });
+
+    effect(() => {
+      this.canvasService.originalImage();
+      setTimeout(() => {
+        this.drawHistogram();
+        this.drawAngleCircle();
+      });
+    });
   }
 
-  onFileUpload(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
+  onImageSelected(file: File): void {
+    this.canvasService.loadFile(file);
+  }
 
-    const file = input.files[0];
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      const img = new Image();
-      img.src = e.target?.result as string;
-
-      img.onload = () => {
-        this.canvasService.setOriginalImage(img);
-      };
-    };
-
-    reader.readAsDataURL(file);
+  onImageCleared(): void {
+    this.canvasService.clearImage();
   }
 
   processImage(): void {
     this.canvasService.processImage();
-  }
-
-  resetImage(): void {
-    this.canvasService.resetToOriginal();
   }
 
   onThresholdChange(value: number): void {
@@ -84,12 +79,24 @@ export class PixelSortFiltersComponent {
   }
 
   onModeChange(mode: string): void {
-    this.filtersService.setMode(mode as any);
+    this.filtersService.setMode(mode as PixelSortMode);
     this.canvasService.generateHistogram();
   }
 
   setAngle(angle: number): void {
     this.filtersService.setAngle(angle);
+  }
+
+  setMode(mode: PixelSortMode): void {
+    this.filtersService.setMode(mode);
+  }
+
+  resetThreshold(): void {
+    this.filtersService.setThreshold(this.CONFIG.THRESHOLD.DEFAULT);
+  }
+
+  resetAngle(): void {
+    this.filtersService.setAngle(this.CONFIG.ANGLE.DEFAULT);
   }
 
   toggleInvert(): void {
@@ -100,8 +107,41 @@ export class PixelSortFiltersComponent {
     this.filtersService.toggleStackOutput();
   }
 
-  toggleControls(): void {
-    this.showControls = !this.showControls;
+  toggleCircularSort(): void {
+    this.filtersService.toggleCircularSort();
+  }
+
+  resetPivot(): void {
+    this.filtersService.resetPivot();
+  }
+
+  onBrushSizeChange(value: number): void {
+    this.maskService.setBrushSize(value);
+  }
+
+  onBrushColorChange(value: string): void {
+    this.maskService.setBrushColor(value);
+  }
+
+  onBrushOpacityChange(value: number): void {
+    this.maskService.setBrushOpacity(value);
+  }
+
+  onBrushHoleChange(value: number): void {
+    // Slider is 0-100; store as fraction 0-1.
+    this.maskService.setBrushHole(value / 100);
+  }
+
+  setBrushShape(shape: 'circle' | 'ring'): void {
+    this.maskService.setBrushShape(shape);
+  }
+
+  toggleMask(): void {
+    this.maskService.toggleMask();
+  }
+
+  clearMask(): void {
+    this.maskService.clearMask();
   }
 
   private drawHistogram(): void {
@@ -123,15 +163,15 @@ export class PixelSortFiltersComponent {
         (filters.invert && i < filters.threshold) ||
         (!filters.invert && i >= filters.threshold)
       ) {
-        ctx.fillStyle = COLORS.ACCENT_PINK;
+        ctx.fillStyle = COLORS.ACCENT;
       } else {
-        ctx.fillStyle = COLORS.MUTED_GRAY;
+        ctx.fillStyle = COLORS.MUTED;
       }
       ctx.fillRect(
         i,
         this.CONFIG.CANVAS.HISTOGRAM_HEIGHT,
         1,
-        -histogramData[i] * scale
+        -histogramData[i] * scale,
       );
     }
   }
@@ -150,40 +190,35 @@ export class PixelSortFiltersComponent {
 
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
-    // Draw outer circle
-    ctx.strokeStyle = COLORS.MUTED_GRAY;
+    ctx.strokeStyle = COLORS.MUTED;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     ctx.stroke();
 
-    // Draw angle line
-    ctx.strokeStyle = COLORS.ACCENT_PINK;
+    ctx.strokeStyle = COLORS.ACCENT;
     ctx.lineWidth = 3;
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
     ctx.lineTo(
       centerX + lineLength * Math.cos(angleRad),
-      centerY + lineLength * Math.sin(angleRad)
+      centerY + lineLength * Math.sin(angleRad),
     );
     ctx.stroke();
 
-    // Draw center dot
-    ctx.fillStyle = COLORS.ACCENT_PINK;
+    ctx.fillStyle = COLORS.ACCENT;
     ctx.beginPath();
     ctx.arc(centerX, centerY, 3, 0, 2 * Math.PI);
     ctx.fill();
 
-    // Draw reference line (0 degrees)
-    ctx.strokeStyle = COLORS.MUTED_GRAY;
+    ctx.strokeStyle = COLORS.MUTED;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(centerX, centerY);
     ctx.lineTo(centerX + lineLength, centerY);
     ctx.stroke();
 
-    // Draw angle text - centrado horizontalmente
-    ctx.fillStyle = COLORS.MUTED_GRAY;
+    ctx.fillStyle = COLORS.MUTED;
     ctx.font = '14px system-ui';
     ctx.textAlign = 'center';
     ctx.fillText(`${filters.angle}°`, centerX, 20);

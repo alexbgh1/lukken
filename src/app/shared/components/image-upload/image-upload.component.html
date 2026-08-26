@@ -1,0 +1,76 @@
+<div class="space-y-2">
+  <label
+    class="block text-xs font-medium text-text-secondary"
+    [attr.for]="inputId()"
+  >
+    {{ label() }}
+  </label>
+
+  <label
+    [attr.for]="inputId()"
+    class="relative flex flex-col items-center justify-center w-full h-28 border border-dashed rounded-lg cursor-pointer transition-colors overflow-hidden"
+    [class.border-accent-primary]="isDragging() || previewUrl()"
+    [class.border-border]="!isDragging() && !previewUrl()"
+    style="background: var(--color-bg-primary)"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+  >
+    @if (previewUrl()) {
+      <img
+        [src]="previewUrl()"
+        class="absolute inset-0 w-full h-full object-cover transition-opacity"
+        [class.opacity-40]="isDragging()"
+        alt="Selected image preview"
+      />
+      <!-- Filename + remove, over a scrim so it stays readable on any photo -->
+      <div
+        class="absolute inset-x-0 bottom-0 flex items-center gap-1 px-2 py-1"
+        style="
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.75), transparent);
+        "
+      >
+        <span class="flex-1 text-3xs text-white/90 truncate">{{
+          fileName()
+        }}</span>
+        <button
+          type="button"
+          class="shrink-0 p-0.5 rounded hover:bg-white/20 transition-colors"
+          title="Remove image"
+          (click)="onClear($event)"
+        >
+          <x-icon className="w-3 h-3 text-white/90" />
+        </button>
+      </div>
+    } @else {
+      <div class="flex flex-col items-center justify-center px-4 w-full">
+        <upload-icon
+          [className]="
+            isDragging()
+              ? 'w-5 h-5 text-accent-primary'
+              : 'w-5 h-5 text-text-muted'
+          "
+        />
+        <p
+          class="mt-2 text-xs text-center"
+          [class.text-accent-primary]="isDragging()"
+          [class.text-text-muted]="!isDragging()"
+        >
+          <span class="font-medium">Click</span> or drag
+        </p>
+      </div>
+    }
+
+    <input
+      [id]="inputId()"
+      type="file"
+      [attr.accept]="accept()"
+      class="hidden"
+      (change)="onFileSelected($event)"
+    />
+  </label>
+
+  @if (message()) {
+    <div class="text-xs text-text-muted pt-1">{{ message() }}</div>
+  }
+</div>

@@ -1,37 +1,151 @@
 @import "tailwindcss";
 
-/*
-  Note: This file contains TailwindCSS configuration based on V4
-*/
+@font-face {
+  font-family: "Pliant";
+  src: url("assets/fonts/Pliant/Pliant-VariableFont_wdth,wght.ttf")
+    format("truetype-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Pliant";
+  src: url("assets/fonts/Pliant/Pliant-Italic-VariableFont_wdth,wght.ttf")
+    format("truetype-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 @theme {
-  /* Background, Dark Blue */
-  --color-bg-primary: oklch(15% 0.03 275);
-  --color-bg-secondary: oklch(20% 0.03 275);
-  --color-bg-tertiary: oklch(25% 0.03 275);
-  --color-bg-canvas: oklch(22.84% 0.0384 283);
+  --font-sans: "Pliant", system-ui, -apple-system, sans-serif;
 
-  /* White text to grayish tones */
-  --color-text-primary: oklch(95% 0.01 275);
-  --color-text-secondary: oklch(80% 0.01 275);
-  --color-text-muted: oklch(65% 0.01 275);
+  --font-mono: "Pliant", ui-monospace, monospace;
 
-  /* Accent colors, TODO: update */
-  --color-accent-primary: oklch(70% 0.22 310);
-  --color-accent-secondary: oklch(75% 0.18 190);
+  /* Two steps below text-xs (12px), which is where Tailwind's scale stops.
+     Deliberately without a paired line-height: the arbitrary values these
+     replace set font-size only, so adding one would shift the spacing of
+     every label and note that uses them. */
+  --text-2xs: 11px;
+  --text-3xs: 10px;
+
+  /* Letter spacing. These replace Tailwind's own three wide steps
+     (0.025 / 0.05 / 0.1em) rather than sitting beside them: the values
+     already in use land just inside each one, and the stock names describe
+     them accurately enough that inventing new ones would only add
+     vocabulary. No other tracking-* class exists in the codebase, so
+     nothing was relying on the defaults. */
+  --tracking-wide: 0.02em;
+  --tracking-wider: 0.04em;
+  --tracking-widest: 0.08em;
+
+  /* Background */
+  --color-bg-primary: oklch(10% 0 0);
+  --color-bg-secondary: oklch(16% 0 0);
+  --color-bg-canvas: oklch(13% 0 0);
+
+  /* Text */
+  --color-text-primary: oklch(95% 0 0);
+  --color-text-secondary: oklch(80% 0 0);
+  --color-text-muted: oklch(65% 0 0);
+
+  /* Accent - monochrome high-contrast */
+  --color-accent-primary: oklch(90% 0 0);
+  --color-accent-secondary: oklch(70% 0 0);
 
   /* Interactive states */
-  --color-hover: oklch(25% 0.08 275);
-  --color-active: oklch(30% 0.1 275);
+  --color-hover: oklch(25% 0.005 55);
+  --color-active: oklch(88% 0 0);
 
-  /* Borders and division lines */
-  --color-border: oklch(25% 0.05 275);
+  /* Borders */
+  --color-border: oklch(30% 0 0);
+
+  /* Scrollbars. Sits just above the panel background so the thumb reads as a
+     recess in the surface rather than an object placed on top of it. */
+  --color-scrollbar: oklch(32% 0 0);
+  --color-scrollbar-hover: oklch(45% 0 0);
+
+  /* Easing.
+     The built-in CSS curves are too weak to read as deliberate, so these
+     override Tailwind's defaults: every existing `ease-out` and `ease-in-out`
+     utility picks up the stronger curve without touching a single template.
+     Never use ease-in on UI: it starts slow, delaying the exact moment the
+     user is watching. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+
+  /* Anything using a bare `transition-*` utility inherits this, which is most
+     of the app, so it is the highest-leverage line in the file. */
+  --default-transition-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Reduced motion means fewer and gentler animations, not zero. Colour and
+   opacity still transition because they aid comprehension; movement is the
+   part that causes discomfort, so transform transitions are dropped and
+   decorative loops are stopped. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 120ms !important;
+    transition-property: opacity, color, background-color, border-color, fill,
+      stroke !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @layer base {
-  /* Range input styles - Override Tailwind defaults */
-  input[type="range"],
-  .custom-range {
+  /* Scrollbars.
+
+     The tool panels and the canvas stage both scroll inside themselves now, so
+     the default chrome scrollbar shows up in the middle of the interface
+     rather than at the edge of the window, where its light track reads as a
+     seam splitting the layout.
+
+     The thumb is drawn with a transparent border and `background-clip:
+     content-box`, which paints it 4px wide while keeping the full 10px as a
+     grab target. Thin and easy to hit, instead of one or the other. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-scrollbar);
+    background-clip: content-box;
+    border: 3px solid transparent;
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-scrollbar-hover);
+    background-clip: content-box;
+  }
+
+  /* Press feedback on every button, which the design system asks for but only
+     three buttons carried.
+     Written as `scale` rather than `transform: scale(...)` because Tailwind v4
+     emits standalone transform properties: this composes with any translate or
+     rotate a button already has instead of overwriting it. */
+  button:not(:disabled):not([disabled]):active {
+    scale: 0.97;
+  }
+
+  input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     background: transparent;
@@ -40,9 +154,7 @@
     border-radius: 4px;
   }
 
-  /* Track styles for WebKit browsers */
-  input[type="range"]::-webkit-slider-track,
-  .custom-range::-webkit-slider-track {
+  input[type="range"]::-webkit-slider-track {
     width: 100%;
     height: 8px;
     background: var(--color-bg-secondary);
@@ -50,29 +162,28 @@
     border: none;
   }
 
-  /* Thumb styles for WebKit browsers */
-  input[type="range"]::-webkit-slider-thumb,
-  .custom-range::-webkit-slider-thumb {
+  input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 20px;
     height: 20px;
-    background: var(--color-accent-primary);
+    background: var(--color-text-muted);
     border-radius: 50%;
     border: 2px solid var(--color-bg-primary);
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
-  input[type="range"]::-webkit-slider-thumb:hover,
-  .custom-range::-webkit-slider-thumb:hover {
-    background: var(--color-accent-secondary);
+  input[type="range"]::-webkit-slider-thumb:hover {
+    background: var(--color-text-secondary);
     transform: scale(1.1);
   }
 
-  /* Track styles for Firefox */
-  input[type="range"]::-moz-range-track,
-  .custom-range::-moz-range-track {
+  input[type="range"].slider-modified::-webkit-slider-thumb {
+    background: var(--color-accent-primary);
+  }
+
+  input[type="range"]::-moz-range-track {
     width: 100%;
     height: 8px;
     background: var(--color-bg-secondary);
@@ -80,12 +191,10 @@
     border: none;
   }
 
-  /* Thumb styles for Firefox */
-  input[type="range"]::-moz-range-thumb,
-  .custom-range::-moz-range-thumb {
+  input[type="range"]::-moz-range-thumb {
     width: 20px;
     height: 20px;
-    background: var(--color-accent-primary);
+    background: var(--color-text-muted);
     border-radius: 50%;
     border: 2px solid var(--color-bg-primary);
     cursor: pointer;
@@ -93,13 +202,15 @@
     -moz-appearance: none;
   }
 
-  input[type="range"]::-moz-range-thumb:hover,
-  .custom-range::-moz-range-thumb:hover {
-    background: var(--color-accent-secondary);
+  input[type="range"]::-moz-range-thumb:hover {
+    background: var(--color-text-secondary);
     transform: scale(1.1);
   }
 
-  /* File input styles */
+  input[type="range"].slider-modified::-moz-range-thumb {
+    background: var(--color-accent-primary);
+  }
+
   input[type="file"] {
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
@@ -124,7 +235,6 @@
     background: var(--color-accent-secondary);
   }
 
-  /* Select styles */
   select {
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
@@ -137,36 +247,21 @@
   select:focus {
     outline: none;
     border-color: var(--color-accent-primary);
-    box-shadow: 0 0 0 2px rgba(112, 198, 255, 0.2);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
   }
 }
 
-/* === BODY DARK MODE === */
 body {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
 }
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-  50% {
-    transform: translateY(-10px) rotate(180deg);
-  }
-}
-
-/* Animation classes */
-.animate-float {
-  animation: float 20s ease-in-out infinite;
-}
 
 .bg-grid-pattern {
   background-image: radial-gradient(
     circle at 1px 1px,
-    oklch(70% 0.22 310) 1px,
+    oklch(90% 0 0) 1px,
     transparent 0
   );
   background-size: 40px 40px;
